@@ -279,6 +279,11 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   for (std::vector<sim::MCTrack>::const_iterator it = mctrackh->begin();
             it != mctrackh->end(); ++it) {
     const sim::MCTrack & mctrack = *it;
+
+    double dx = mctrack.Start().X() - mctrack.End().X();
+    double dy = mctrack.Start().Y() - mctrack.End().Y();
+    double dz = mctrack.Start().Z() - mctrack.End().Z();
+    fMCTrackLength.push_back(sqrt(pow(dx,2)+pow(dy,2)+pow(dz,2)));
     px = mctrack.Start().Px();
     py = mctrack.Start().Py();
     pz = mctrack.Start().Pz();
@@ -327,6 +332,10 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   for (std::vector<recob::Track>::const_iterator it = trackh->begin();
             it != trackh->end(); ++it) {
     const recob::Track & track = *it;
+    double dx = track.Vertex().X() - track.End().X();
+    double dy = track.Vertex().Y() - track.End().Y();
+    double dz = track.Vertex().Z() - track.End().Z();
+    fTrackLength.push_back(sqrt(pow(dx,2)+pow(dy,2)+pow(dz,2)));
     px = track.VertexDirection()[0] * track.VertexMomentum();
     py = track.VertexDirection()[1] * track.VertexMomentum();
     pz = track.VertexDirection()[2] * track.VertexMomentum();
