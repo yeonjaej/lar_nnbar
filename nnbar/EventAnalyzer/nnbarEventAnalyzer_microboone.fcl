@@ -1,0 +1,12 @@
+BEGIN_PROLOG
+
+nnbar_EventAnalyzer:
+{ 
+ module_type:             "nnbar/EventAnalyzer/nnbarEventAnalyzer"
+ HitModuleLabel:          "gaushit"
+ TrackModuleLabel:        "stitchkalmanhit"
+ ShowerModuleLabel:       "showerrecopandora"
+ VertexCut:               30
+}
+
+END_PROLOG
