@@ -287,7 +287,7 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
     px = mctrack.Start().Px();
     py = mctrack.Start().Py();
     pz = mctrack.Start().Pz();
-    fMCTrackMomentum.push_back(sqrt(pow(px,2)+pow(py,2)+pow(pz,2)));
+    fMCTrackMomentum.push_back(0.001*sqrt(pow(px,2)+pow(py,2)+pow(pz,2)));
   }
 
 // MC shower information
@@ -299,7 +299,7 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   for (std::vector<sim::MCShower>::const_iterator it = mcshowerh->begin();
             it != mcshowerh->end(); ++it) {
     const sim::MCShower & mcshower = *it;
-    fMCShowerEnergy.push_back(mcshower.Start().E());
+    fMCShowerEnergy.push_back(0.001*mcshower.Start().E());
   }
 
 // Hit information
