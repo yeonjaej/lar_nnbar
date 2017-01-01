@@ -307,12 +307,13 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   evt.getByLabel(fHitModuleLabel,hith);
 
   std::vector<int> WiresHit;
+  fHitWires = 0;
 
   fNumberHits = hith->size();
+
   for (std::vector<recob::Hit>::const_iterator it = hith->begin();
             it != hith->end(); ++it) {
     const recob::Hit & hit = *it;
-    fHitWires = 0;
     if (std::find(WiresHit.begin(),WiresHit.end(),hit.Channel())!=WiresHit.end()) {
       WiresHit.push_back(hit.Channel());
       ++fHitWires;
@@ -336,9 +337,9 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
     double dy = track.Vertex().Y() - track.End().Y();
     double dz = track.Vertex().Z() - track.End().Z();
     fTrackLength.push_back(sqrt(pow(dx,2)+pow(dy,2)+pow(dz,2)));
-    px = track.VertexDirection()[0] * track.VertexMomentum();
-    py = track.VertexDirection()[1] * track.VertexMomentum();
-    pz = track.VertexDirection()[2] * track.VertexMomentum();
+    px = 0.001 * track.VertexDirection()[0] * track.VertexMomentum();
+    py = 0.001 * track.VertexDirection()[1] * track.VertexMomentum();
+    pz = 0.001 * track.VertexDirection()[2] * track.VertexMomentum();
     fTrackMomentum.push_back(sqrt(pow(px,2)+pow(py,2)+pow(pz,2)));
   }
 
@@ -351,7 +352,7 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   for (std::vector<recob::Shower>::const_iterator it = showerh->begin();
             it != showerh->end(); ++it) {
     const recob::Shower & shower = *it;
-    fShowerEnergy.push_back(shower.Energy()[2]);
+    fShowerEnergy.push_back(0.001*shower.Energy()[2]);
   }
 
 // Analysis
@@ -365,8 +366,8 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
             it != trackh->end(); ++it) {
     const recob::Track & track = *it;
     double startpoint[3] = { track.Vertex()[0], track.Vertex()[1], track.Vertex()[2] };
-    double momentum[3] = { track.VertexDirection()[0]*track.VertexMomentum(), track.VertexDirection()[1]*track.VertexMomentum(),
-              track.VertexDirection()[2]*track.VertexMomentum() };
+    double momentum[3] = { 0.001*track.VertexDirection()[0]*track.VertexMomentum(), 0.001*track.VertexDirection()[1]*track.VertexMomentum(),
+              0.001*track.VertexDirection()[2]*track.VertexMomentum() };
     all_objects.push_back(minipart(startpoint,momentum,"t",id));
     ++id;
   }
@@ -375,7 +376,7 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
     const recob::Shower & shower = *it;
     double startpoint[3] = { shower.ShowerStart()[0], shower.ShowerStart()[1], shower.ShowerStart()[2] };
     double energy = shower.Energy()[2];
-    double momentum[3] = { shower.Direction()[0]*energy, shower.Direction()[1]*energy, shower.Direction()[2]*energy };
+    double momentum[3] = { 0.001*shower.Direction()[0]*energy, 0.001*shower.Direction()[1]*energy, 0.001*shower.Direction()[2]*energy };
     all_objects.push_back(minipart(startpoint,momentum,"s",id));
     ++id;
   }
