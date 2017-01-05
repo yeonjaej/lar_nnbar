@@ -94,6 +94,8 @@ private:
 
   // MC truth information
   int fNumberPrimaries;
+  int fNumberPrimariesTrackLike;
+  int fNumberPrimariesShowerLike;
 
   // MC track information
   int fNumberMCTracks;
@@ -165,6 +167,8 @@ void nnbarEventAnalyzer::InitializeBranches() {
 
   // MC truth information
   fTree->Branch("NumberPrimaries",&fNumberPrimaries,"NumberPrimaries/I");
+  fTree->Branch("NumberPrimariesTrackLike",&fNumberPrimariesTrackLike,"NumberPrimariesTrackLike/I");
+  fTree->Branch("NumberPrimariesShowerLike",&fNumberPrimariesShowerLike,"NumberPrimariesShowerLike/I");
 
   // MC track information
   fTree->Branch("NumberMCTracks",&fNumberMCTracks,"NumberMCTracks/I");
@@ -245,7 +249,9 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
     art::fill_ptr_vector(TruthList,TruthListHandle);
   art::Ptr<simb::MCTruth> mct = TruthList[0];
 
-  fNumberPrimaries = mct->NParticles();
+  fNumberPrimaries = 0;
+  fNumberPrimariesTrackLike = 0;
+  fNumberPrimariesShowerLike = 0;
   fTrueEventEnergy = 0;
   double px = 0;
   double py = 0;
@@ -255,17 +261,23 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
     simb::MCParticle part = mct->GetParticle(it);
     if (part.StatusCode() == 1) {
       if (abs(part.PdgCode()) == 211 || part.PdgCode() == 111) {
+        ++fNumberPrimaries;
         fTrueEventEnergy += part.E();
         px += part.Px();
         py += part.Py();
-        pz += part.Pz();
+        pz += part.Pz()
       }
       else if (part.PdgCode() == 2212) {
+        ++fNumberPrimaries;
         fTrueEventEnergy += part.E() - part.Mass();
         px += part.Px();
         py += part.Py();
         pz += part.Pz();
       }
+      if (abs(part.PdgCode()) == 211 || abs(part.PdgCode()) == 2212)
+        ++fNumberPrimariesTrackLike;
+      else if (part.PdgCode() == 111)
+        fNumberPrimariesShowerLike += 2;
     }
   }
   fTrueEventMomentum = sqrt(pow(px,2)+pow(py,2)+pow(pz,2));
