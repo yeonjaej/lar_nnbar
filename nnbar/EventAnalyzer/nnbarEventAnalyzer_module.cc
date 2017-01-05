@@ -265,7 +265,7 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
         fTrueEventEnergy += part.E();
         px += part.Px();
         py += part.Py();
-        pz += part.Pz()
+        pz += part.Pz();
       }
       else if (part.PdgCode() == 2212) {
         ++fNumberPrimaries;
