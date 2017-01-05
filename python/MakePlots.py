@@ -14,6 +14,8 @@ def get_object_info(list_in,list_out):
       list_out.append(n)
 
 NumberPrimaries = []
+NumberPrimariesTrackLike = []
+NumberPrimariesShowerLike = []
 
 NumberMCTracks = []
 MCTrackLength = []
@@ -54,6 +56,8 @@ for file_number in xrange(996):
 
   # Primary information
   get_event_info(array['NumberPrimaries'],NumberPrimaries)
+  get_event_info(array['NumberPrimariesTrackLike'],NumberPrimariesTrackLike)
+  get_event_info(array['NumberPrimariesShowerLike'],NumberPrimariesShowerLike)
 
   # MC track information
   get_event_info(array['NumberMCTracks'],NumberMCTracks)
@@ -104,6 +108,8 @@ rc('font', **font)
 
 # Primary information
 pm.truth_only_plot('NumberPrimaries',NumberPrimaries,"Number of primary particles","Number of primaries","Number of events",[0,20],20,1,False)
+pm.truth_only_plot('NumberPrimariesTrackLike',NumberPrimariesTrackLike,"Number of track-like primaries","Number of primaries","Number of events",[0,20],20,1,False)
+pm.truth_only_plot('NumberPrimariesShowerLike',NumberPrimariesShowerLike,"Number of shower-like primaries","Number of primaries","Number of events",[0,20],20,1,False)
 
 # Track information
 pm.mcreco_reco_comparison('TrackMultiplicity',NumberMCTracks,NumberTracks,"Track multiplicity","Number of tracks","Number of events",[0,20],20,1,False)

@@ -291,15 +291,19 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   for (std::vector<sim::MCTrack>::const_iterator it = mctrackh->begin();
             it != mctrackh->end(); ++it) {
     const sim::MCTrack & mctrack = *it;
-
     double dx = mctrack.Start().X() - mctrack.End().X();
     double dy = mctrack.Start().Y() - mctrack.End().Y();
     double dz = mctrack.Start().Z() - mctrack.End().Z();
-    fMCTrackLength.push_back(sqrt(pow(dx,2)+pow(dy,2)+pow(dz,2)));
+    double mctrack_length = sqrt(pow(dx,2)+pow(dy,2)+pow(dz,2));
     px = mctrack.Start().Px();
     py = mctrack.Start().Py();
     pz = mctrack.Start().Pz();
-    fMCTrackMomentum.push_back(0.001*sqrt(pow(px,2)+pow(py,2)+pow(pz,2)));
+    double mctrack_momentum = 0.001 * sqrt(pow(px,2)+pow(py,2)+pow(pz,2));
+    // perform some detection threshold cuts
+    if (mctrack_momentum > 0.01 && mctrack_length > 5) {
+      fMCTrackLength.push_back(mctrack_length);
+      fMCTrackMomentum.push_back(mctrack_momentum);
+    }
   }
 
 // MC shower information
@@ -311,7 +315,11 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   for (std::vector<sim::MCShower>::const_iterator it = mcshowerh->begin();
             it != mcshowerh->end(); ++it) {
     const sim::MCShower & mcshower = *it;
-    fMCShowerEnergy.push_back(0.001*mcshower.Start().E());
+    double mcshower_energy = 0.001 * mcshower.Start().E();
+    // perform some detection threshold cuts
+    if (mcshower_energy > 0.01) {
+      fMCShowerEnergy.push_back(mcshower_energy);
+    }
   }
 
 // Hit information
