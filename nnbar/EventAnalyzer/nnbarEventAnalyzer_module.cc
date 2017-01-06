@@ -357,9 +357,9 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
     double dy = track.Vertex().Y() - track.End().Y();
     double dz = track.Vertex().Z() - track.End().Z();
     fTrackLength.push_back(sqrt(pow(dx,2)+pow(dy,2)+pow(dz,2)));
-    px = 0.001 * track.VertexDirection()[0] * track.VertexMomentum();
-    py = 0.001 * track.VertexDirection()[1] * track.VertexMomentum();
-    pz = 0.001 * track.VertexDirection()[2] * track.VertexMomentum();
+    px = track.VertexDirection()[0] * track.VertexMomentum();
+    py = track.VertexDirection()[1] * track.VertexMomentum();
+    pz = track.VertexDirection()[2] * track.VertexMomentum();
     fTrackMomentum.push_back(sqrt(pow(px,2)+pow(py,2)+pow(pz,2)));
   }
 
@@ -386,8 +386,8 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
             it != trackh->end(); ++it) {
     const recob::Track & track = *it;
     double startpoint[3] = { track.Vertex()[0], track.Vertex()[1], track.Vertex()[2] };
-    double momentum[3] = { 0.001*track.VertexDirection()[0]*track.VertexMomentum(), 0.001*track.VertexDirection()[1]*track.VertexMomentum(),
-              0.001*track.VertexDirection()[2]*track.VertexMomentum() };
+    double momentum[3] = { track.VertexDirection()[0]*track.VertexMomentum(), track.VertexDirection()[1]*track.VertexMomentum(),
+              track.VertexDirection()[2]*track.VertexMomentum() };
     all_objects.push_back(minipart(startpoint,momentum,"t",id));
     ++id;
   }
