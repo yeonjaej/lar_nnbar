@@ -131,20 +131,20 @@ pm.mcreco_reco_comparison(sample,'ShowerEnergy',MCShowerEnergy,ShowerEnergy,"Sho
 # Hit information
 pm.reco_only_plot(sample,'NumberHits',NumberHits,"Number of hits","Number of hits","Number of events",[0,2000],50,1,False)
 pm.reco_only_plot(sample,'HitWires',HitWires,"Number of hit wires","Number of hit wires","Number of events",[0,50],50,1,False)
-pm.reco_only_plot(sample,'HitStartTime',HitStartTime,"Hit start time","Start time [TDC]","Number of hits",[0,50],50,1,False)
+pm.reco_only_plot(sample,'HitStartTime',HitStartTime,"Hit start time","Start time [TDC]","Number of hits",[3000,8000],50,1,False)
 pm.reco_only_plot(sample,'HitPeakAmp',HitPeakAmp,"Hit peak amplitude","Peak amplitude [ADC]","Number of hits",[0,50],50,1,False)
 pm.reco_only_plot(sample,'HitRMS',HitRMS,"Hit RMS","RMS [TDC]","Number of hits",[0,20],100,1,False)
 pm.reco_only_plot(sample,'HitIntegral',HitIntegral,"Hit integral", "Integral [ADC x TDC]","Number of hits",[0,500],50,1,False)
 
 # Analysis information
-plt.hist(TrackMultiplicityDiff,bins=20,range=[-10,10],histtype='stepfilled',edgecolor=cc.to_rgba('k',1),facecolor=cc.to_rgba('k',0.4),label="mcreco-reco")
+plt.hist(TrackMultiplicityDiff,bins=20,range=[-20,10],histtype='stepfilled',edgecolor=cc.to_rgba('k',1),facecolor=cc.to_rgba('k',0.4),label="mcreco-reco")
 plt.title("Track multiplicity difference")
 plt.xlabel("Track multiplicity (mcreco-reco)")
 plt.ylabel("Number of events")
 plt.legend(loc=1)
 pm.draw_plot(sample,'TrackMultiplicityDiff')
 
-plt.hist(ShowerMultiplicityDiff,bins=30,range=[-20,10],histtype='stepfilled',edgecolor=cc.to_rgba('k',1),facecolor=cc.to_rgba('k',0.4),label="mcreco-reco")
+plt.hist(ShowerMultiplicityDiff,bins=30,range=[-10,10],histtype='stepfilled',edgecolor=cc.to_rgba('k',1),facecolor=cc.to_rgba('k',0.4),label="mcreco-reco")
 plt.title("Shower multiplicity difference")
 plt.xlabel("Shower multiplicity (mcreco-reco)")
 plt.ylabel("Number of events")

@@ -141,6 +141,8 @@ private:
   std::vector<double> fRecoEventEnergy;
   std::vector<double> fRecoEventInvariantMass;
 
+  double fRecoNumberVertices;
+
   int fTrackMultiplicityDiff;
   int fShowerMultiplicityDiff;
 
@@ -215,6 +217,8 @@ void nnbarEventAnalyzer::InitializeBranches() {
   fTree->Branch("RecoEventMomentum","std::vector<double>",&fRecoEventMomentum);
   fTree->Branch("RecoEventEnergy","std::vector<double>",&fRecoEventEnergy);
   fTree->Branch("RecoEventInvariantMass","std::vector<double>",&fRecoEventInvariantMass);
+
+  fTree->Branch("RecoNumberVertices",&fRecoNumberVertices,"RecoNumberVertices/D");
 
 } // function nnbarEventAnalyzer::InitializeBranches
 
@@ -347,7 +351,7 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   for (std::vector<recob::Hit>::const_iterator it = hith->begin();
             it != hith->end(); ++it) {
     const recob::Hit & hit = *it;
-    if (std::find(WiresHit.begin(),WiresHit.end(),hit.Channel())!=WiresHit.end()) {
+    if (std::find(WiresHit.begin(),WiresHit.end(),hit.Channel())==WiresHit.end()) {
       WiresHit.push_back(hit.Channel());
       ++fHitWires;
     }
@@ -373,8 +377,8 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
     px = track.VertexDirection()[0] * track.VertexMomentum();
     py = track.VertexDirection()[1] * track.VertexMomentum();
     pz = track.VertexDirection()[2] * track.VertexMomentum();
-    std::cout << "Track vertex direction is [ " << track.VertexDirection()[0] << ", " << track.VertexDirection()[1] << ", "
-           << track.VertexDirection()[2] << " ] and vertex momentum is " << track.VertexMomentum() << "." << std::endl;
+    // std::cout << "Track vertex direction is [ " << track.VertexDirection()[0] << ", " << track.VertexDirection()[1] << ", "
+           // << track.VertexDirection()[2] << " ] and vertex momentum is " << track.VertexMomentum() << "." << std::endl;
     fTrackMomentum.push_back(sqrt(pow(px,2)+pow(py,2)+pow(pz,2)));
   }
 
@@ -465,6 +469,8 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
     fRecoEventEnergy.push_back(vertex_energy);
     fRecoEventMomentum.push_back(sqrt(pow(vertex_momentum[0],2)+pow(vertex_momentum[1],2)+pow(vertex_momentum[2],2)));
   }
+
+  fRecoNumberVertices = vertex_candidates.size();
 
 // Fill event tree
   fTree->Fill();
