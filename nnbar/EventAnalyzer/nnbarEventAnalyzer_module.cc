@@ -284,10 +284,10 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
       if (abs(part.PdgCode()) == 211 || abs(part.PdgCode()) == 2212) {
         ++fNumberPrimariesTrackLike;
         TruePrimaryTrackMomentum.push_back(sqrt(pow(part.Px(),2)+pow(part.Py(),2)+pow(part.Pz(),2)));
-        double dx = part.EndX() - Vx();
-        double dy = part.EndY() - Vy();
-        double dz = part.EndZ() - Vz();
-        TruePrimaryTrackLength.push_back(sqrt(pow(part.Py)))
+        double dx = part.EndX() - part.Vx();
+        double dy = part.EndY() - part/Vy();
+        double dz = part.EndZ() - part.Vz();
+        TruePrimaryTrackLength.push_back(sqrt(pow(part.Px(),2)+pow(part.Py(),2)+pow(part.Pz(),2)));
       }
       else if (part.PdgCode() == 111)
         fNumberPrimariesShowerLike += 2;
