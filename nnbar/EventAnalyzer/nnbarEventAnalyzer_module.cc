@@ -96,6 +96,8 @@ private:
   int fNumberPrimaries;
   int fNumberPrimariesTrackLike;
   int fNumberPrimariesShowerLike;
+  std::vector<double> fTruePrimaryTrackLength;
+  std::vector<double> fTruePrimaryTrackMomentum;
 
   // MC track information
   int fNumberMCTracks;
@@ -169,6 +171,8 @@ void nnbarEventAnalyzer::InitializeBranches() {
   fTree->Branch("NumberPrimaries",&fNumberPrimaries,"NumberPrimaries/I");
   fTree->Branch("NumberPrimariesTrackLike",&fNumberPrimariesTrackLike,"NumberPrimariesTrackLike/I");
   fTree->Branch("NumberPrimariesShowerLike",&fNumberPrimariesShowerLike,"NumberPrimariesShowerLike/I");
+  fTree->Branch("TruePrimaryTrackLength","std::vector<double>",&fTruePrimaryTrackLength);
+  fTree->Branch("TruePrimaryTrackMomentum","std::vector<double>",&fTruePrimaryTrackMomentum);
 
   // MC track information
   fTree->Branch("NumberMCTracks",&fNumberMCTracks,"NumberMCTracks/I");
@@ -215,6 +219,9 @@ void nnbarEventAnalyzer::InitializeBranches() {
 } // function nnbarEventAnalyzer::InitializeBranches
 
 void nnbarEventAnalyzer::ClearData() {
+
+  fTruePrimaryTrackLength.clear();
+  fTruePrimaryTrackMomentum.clear();
   
   fMCTrackLength.clear();
   fMCTrackMomentum.clear();
@@ -274,8 +281,14 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
         py += part.Py();
         pz += part.Pz();
       }
-      if (abs(part.PdgCode()) == 211 || abs(part.PdgCode()) == 2212)
+      if (abs(part.PdgCode()) == 211 || abs(part.PdgCode()) == 2212) {
         ++fNumberPrimariesTrackLike;
+        TruePrimaryTrackMomentum.push_back(sqrt(pow(part.Px(),2)+pow(part.Py(),2)+pow(part.Pz(),2)));
+        double dx = part.EndX() - Vx();
+        double dy = part.EndY() - Vy();
+        double dz = part.EndZ() - Vz();
+        TruePrimaryTrackLength.push_back(sqrt(pow(part.Py)))
+      }
       else if (part.PdgCode() == 111)
         fNumberPrimariesShowerLike += 2;
     }
