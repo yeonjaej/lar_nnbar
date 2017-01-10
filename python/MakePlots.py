@@ -157,3 +157,6 @@ pm.draw_plot(sample,'ShowerMultiplicityDiff')
 pm.truth_reco_comparison(sample,'EventMomentum',TrueEventMomentum,RecoEventMomentum,"Event momentum","Momentum [GeV]","Number of events",[0,2],50,1,False)
 pm.truth_reco_comparison(sample,'EventEnergy',TrueEventEnergy,RecoEventEnergy,"Event energy","Energy [GeV]","Number of events",[0,2],50,1,False)
 
+plt.hist2d(TrackLength,TrackMomentum,bins=[50,50])
+plt.savefig("./plots/{}/TrackMomentumVsLength.png".format(sample))
+

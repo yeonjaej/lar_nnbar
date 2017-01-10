@@ -373,6 +373,8 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
     px = track.VertexDirection()[0] * track.VertexMomentum();
     py = track.VertexDirection()[1] * track.VertexMomentum();
     pz = track.VertexDirection()[2] * track.VertexMomentum();
+    std::cout << "Track vertex direction is [ " << track.VertexDirection()[0] << ", " << track.VertexDirection()[1] << ", "
+           << track.VertexDirection()[2] << " ] and vertex momentum is " << track.VertexMomentum() << "." << std::endl;
     fTrackMomentum.push_back(sqrt(pow(px,2)+pow(py,2)+pow(pz,2)));
   }
 
