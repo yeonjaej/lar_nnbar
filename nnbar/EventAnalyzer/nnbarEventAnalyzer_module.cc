@@ -285,9 +285,9 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
         ++fNumberPrimariesTrackLike;
         fTruePrimaryTrackMomentum.push_back(sqrt(pow(part.Px(),2)+pow(part.Py(),2)+pow(part.Pz(),2)));
         double dx = part.EndX() - part.Vx();
-        double dy = part.EndY() - part/Vy();
+        double dy = part.EndY() - part.Vy();
         double dz = part.EndZ() - part.Vz();
-        fTruePrimaryTrackLength.push_back(sqrt(pow(part.Px(),2)+pow(part.Py(),2)+pow(part.Pz(),2)));
+        fTruePrimaryTrackLength.push_back(sqrt(pow(dx,2)+pow(dy,2)+pow(dz,2)));
       }
       else if (part.PdgCode() == 111)
         fNumberPrimariesShowerLike += 2;
