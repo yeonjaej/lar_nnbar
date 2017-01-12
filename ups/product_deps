@@ -38,7 +38,7 @@ end_product_list
 # We now define allowed qualifiers and the corresponding qualifiers for the depdencies.
 # Make a table by adding columns before "notes". 
 # e10  - with gcc 4.9.3 and -std=c++1y
-qualifier	uboonecode
+qualifier	dunetpc
 e10:debug	e10:debug
 e10:opt		e10:opt
 e10:prof	e10:prof
