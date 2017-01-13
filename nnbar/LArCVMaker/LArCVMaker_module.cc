@@ -19,14 +19,12 @@
 #include <string>
 
 namespace nnbar {
-  class LArCVMaker;
-}
 
-class nnbar::LArCVMaker : public art::EDAnalyzer {
+class LArCVMaker : public art::EDAnalyzer {
   
 public:
 
-  explicit nnbar::LArCVMaker(fhicl::ParameterSet const & pset);
+  explicit LArCVMaker(fhicl::ParameterSet const & pset);
   void beginJob();
   //void endJob();
   void produce(art::Event const & evt);
@@ -44,18 +42,18 @@ private:
 
 }; // class nnbar::LArCVMaker
 
-void nnbar::LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
+void LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
     EDAnalyzer(pset),
     fTree(nullptr),
     fWireModuleLabel(pst.get<std::string>("WireModuleLabel"))
-{} // function nnbar::LArCVMaker::LArCVMaker
+{} // function LArCVMaker::LArCVMaker
 
-void nnbar::LArCVMaker::ClearData() {
+void LArCVMaker::ClearData() {
 
   fMaxADC.clear();
-} // function nnbar::LArCVMaker::ClearData
+} // function LArCVMaker::ClearData
 
-void nnbar::LArCVMaker::beginJob() {
+void LArCVMaker::beginJob() {
 
   if (!fTree) {
 
@@ -66,9 +64,9 @@ void nnbar::LArCVMaker::beginJob() {
     fTree->Branch("NumberTicks",&fNumberTicks,"NumberTicks/I");
     fTree->Branch("MaxADC","std::vector<float>",&fMaxADC);
   }
-} // nnbar::LArCVMaker::beginJob
+} // LArCVMaker::beginJob
 
-void nnbar::LArCVMaker::analyze(art::Event const & evt) {
+void LArCVMaker::analyze(art::Event const & evt) {
 
   art::Handle<std::vector<recob::Wire>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
@@ -93,4 +91,7 @@ void nnbar::LArCVMaker::analyze(art::Event const & evt) {
 
   fTree->Fill();
   ClearData();
-} // nnbar::LArCVMaker::analyze
+} // LArCVMaker::analyze
+
+} // namespace nnbar
+
