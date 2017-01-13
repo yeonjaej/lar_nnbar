@@ -42,7 +42,7 @@ private:
 
 }; // class nnbar::LArCVMaker
 
-void LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
+LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
     EDAnalyzer(pset),
     fTree(nullptr),
     fWireModuleLabel(pset.get<std::string>("WireModuleLabel"))
@@ -76,11 +76,11 @@ void LArCVMaker::analyze(art::Event const & evt) {
   for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
     const recob::Wire & wire = *it;
-    if (it == wireh.begin())
+    if (it == wireh->begin())
       fNumberTicks = wire.Signal().size();
     else {
-      if (wire.Signal().size() != fNumberTicks)
-        throw cet::exception("LArCVMaker") << "Number of time ticks is not consistent between wires!"
+      if (fNumberTicks != (int)wire.Signal().size())
+        throw cet::exception("LArCVMaker") << "Number of time ticks is not consistent between wires!";
     }
     float max_adc = -1;
     for (std::vector<float>::const_iterator adc = wire.Signal().begin();
