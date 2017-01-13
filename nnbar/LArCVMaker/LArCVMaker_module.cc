@@ -27,7 +27,7 @@ public:
   explicit LArCVMaker(fhicl::ParameterSet const & pset);
   void beginJob();
   //void endJob();
-  void produce(art::Event const & evt);
+  void analyze(art::Event const & evt);
 
 private:
 
@@ -45,7 +45,7 @@ private:
 void LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
     EDAnalyzer(pset),
     fTree(nullptr),
-    fWireModuleLabel(pst.get<std::string>("WireModuleLabel"))
+    fWireModuleLabel(pset.get<std::string>("WireModuleLabel"))
 {} // function LArCVMaker::LArCVMaker
 
 void LArCVMaker::ClearData() {
