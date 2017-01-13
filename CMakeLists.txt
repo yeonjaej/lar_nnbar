@@ -58,9 +58,8 @@ find_ups_product( art v1_09_00 )
 find_ups_product( cetbuildtools v3_10_00 )
 find_ups_product( postgresql v9_1_5 )
 find_ups_boost( v1_53_0 )
-find_ups_product( uboonedaq_datatypes )
 find_ups_product( ifdh_art )
-find_ups_product( uboonecode v06_15_00 )
+find_ups_product( dunetpc v06_19_00 )
 
 # macros for dictionary and simple_plugin
 include(ArtDictionary)
