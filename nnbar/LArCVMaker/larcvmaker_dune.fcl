@@ -1,0 +1,9 @@
+BEGIN_PROLOG
+
+LArCVMaker:
+{
+ module_type:             "nnbar/LArCVMaker/LArCVMaker"
+ WireModuleLabel:         "i should really find this out"
+}
+
+END_PROLOG
