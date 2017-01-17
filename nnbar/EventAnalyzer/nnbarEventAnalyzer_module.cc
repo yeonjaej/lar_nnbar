@@ -295,6 +295,8 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
       }
       else if (part.PdgCode() == 111)
         fNumberPrimariesShowerLike += 2;
+      else if (part.PdgCode() == 22 || abs(part.PdgCode()) == 11)
+        ++fNumberPrimariesShowerLike;
     }
   }
   fTrueEventMomentum = sqrt(pow(px,2)+pow(py,2)+pow(pz,2));
@@ -395,8 +397,8 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   }
 
 // Analysis
-  fTrackMultiplicityDiff = fNumberTracks - fNumberMCTracks;
-  fShowerMultiplicityDiff = fNumberShowers - fNumberMCShowers;
+  fTrackMultiplicityDiff = fNumberTracks - fNumberPrimariesTrackLike;
+  fShowerMultiplicityDiff = fNumberShowers - fNumberPrimariesShowerLike;
 
 // Vertexing
   std::vector<minipart> all_objects;

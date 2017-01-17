@@ -120,12 +120,12 @@ pm.truth_only_plot(sample,'NumberPrimariesTrackLike',NumberPrimariesTrackLike,"N
 pm.truth_only_plot(sample,'NumberPrimariesShowerLike',NumberPrimariesShowerLike,"Number of shower-like primaries","Number of primaries","Number of events",[0,20],20,1,False)
 
 # Track information
-pm.mcreco_reco_comparison(sample,'TrackMultiplicity',NumberMCTracks,NumberTracks,"Track multiplicity","Number of tracks","Number of events",[0,20],20,1,False)
+pm.truth_reco_comparison(sample,'TrackMultiplicity',NumberPrimariesTrackLike,NumberTracks,"Track multiplicity","Number of tracks","Number of events",[0,20],20,1,False)
 pm.mcreco_reco_comparison(sample,'TrackLength',MCTrackLength,TrackLength,"Track length","Track length [cm]","Number of tracks",[0,50],80,1,False)
 pm.mcreco_reco_comparison(sample,'TrackMomentum',MCTrackMomentum,TrackMomentum,"Track momentum","Track momentum [GeV]","Number of tracks",[0,1],50,1,False)
 
 # Shower information
-pm.mcreco_reco_comparison(sample,'ShowerMultiplicity',NumberMCShowers,NumberShowers,"Shower multiplicity","Number of showers","Number of events",[0,20],20,1,False)
+pm.truth_reco_comparison(sample,'ShowerMultiplicity',NumberPrimariesShowerLike,NumberShowers,"Shower multiplicity","Number of showers","Number of events",[0,20],20,1,False)
 pm.mcreco_reco_comparison(sample,'ShowerEnergy',MCShowerEnergy,ShowerEnergy,"Shower energy","Shower energy [GeV]","Number of showers",[0,1],50,1,False)
 
 # Hit information
