@@ -143,8 +143,8 @@ private:
 
   double fRecoNumberVertices;
 
-  int fTrackMultiplicityDiff;
-  int fShowerMultiplicityDiff;
+  std::vector<std::pair<std::string,int>> fTrackMultiplicityDiff;
+  std::vector<std::pair<std::string,int>> fShowerMultiplicityDiff;
 
   double fVertexCut;
 
@@ -241,6 +241,9 @@ void nnbarEventAnalyzer::ClearData() {
   fTrackMomentum.clear();
 
   fShowerEnergy.clear();
+
+  fTrackMultiplicityDiff.clear();
+  fShowerMultiplicityDiff.clear();
 
 } // function nnbarEventAnalyzer::ClearData
 
@@ -397,8 +400,20 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   }
 
 // Analysis
-  fTrackMultiplicityDiff = fNumberTracks - fNumberPrimariesTrackLike;
-  fShowerMultiplicityDiff = fNumberShowers - fNumberPrimariesShowerLike;
+  std::string TrackModules[9] = { "cctrack", "pandoraCosmic", "pandoraCosmicKHit", "trackkalmanhit", "pandoraNuKHit", "pandoraNu", "stitchkalmanhitcc", "trackkalmanhitcc", "stitchkalmanhit" };
+  std::string ShowerModules[2] = { "showerrecofuzzy", "showerrecopandora" };
+  for (std::string TrackModule : TrackModules) {
+    art::Handle<std::vector<recob::Track>> TrackModuleHandle;
+    evt.getByLabel(TrackModule,TrackModuleHandle);
+    int diff = TrackModuleHandle->size() - fNumberPrimariesTrackLike;
+    fTrackMultiplicityDiff.push_back(std::pair<std::string,int>(TrackModule,diff));
+  }
+  for (std::string ShowerModule : ShowerModules) {
+    art::Handle<std::vector<recob::Shower>> ShowerModuleHandle;
+    evt.getByLabel(ShowerModule,ShowerModuleHandle);
+    int diff = ShowerModuleHandle->size() - fNumberPrimariesShowerLike;
+    fShowerMultiplicityDiff.push_back(std::pair<std::string,int>(ShowerModule,diff));
+  }
 
 // Vertexing
   std::vector<minipart> all_objects;
