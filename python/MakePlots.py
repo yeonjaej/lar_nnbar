@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from root_numpy import root2array
 from matplotlib import pyplot as plt
 from matplotlib import rc
@@ -60,7 +60,16 @@ else:
 
 for file_number in xrange(996):
   filename = './ana/{}/anahist_{}.root'.format(sample,file_number)
+  if not os.path.isfile(filename):
+    print "Couldn't find file {}...".format(filename)
+    continue
+
   array = root2array(filename,'nnbar/nnbar')
+
+  for item in array['TrackMultiplicityDiff']:
+    print item
+  for item in array['ShowerMultiplicityDiff']:
+    print item
 
   # Primary information
   get_event_info(array['NumberPrimaries'],NumberPrimaries)
