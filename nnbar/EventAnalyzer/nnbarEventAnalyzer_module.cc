@@ -203,8 +203,8 @@ void nnbarEventAnalyzer::InitializeBranches() {
   fTree->Branch("ShowerEnergy","std::vector<double>",&fShowerEnergy);
 
   // Analysis variables
-  fTree->Branch("TrackMultiplicityDiff","std::pair<std::string,int>",&fTrackMultiplicityDiff);
-  fTree->Branch("ShowerMultiplicityDiff",,"std::pair<std::string,int>",&fShowerMultiplicityDiff);
+  fTree->Branch("TrackMultiplicityDiff","std::vector<std::pair<std::string,int>>",&fTrackMultiplicityDiff);
+  fTree->Branch("ShowerMultiplicityDiff","std::vector<std::pair<std::string,int>>",&fShowerMultiplicityDiff);
 
   fTree->Branch("TrueEventMomentum",&fTrueEventMomentum,"TrueEventMomentum/D");
   fTree->Branch("TrueEventEnergy",&fTrueEventEnergy,"TrueEventEnergy/D");
