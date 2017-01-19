@@ -143,8 +143,10 @@ private:
 
   double fRecoNumberVertices;
 
-  std::vector<std::pair<std::string,int>> fTrackMultiplicityDiff;
-  std::vector<std::pair<std::string,int>> fShowerMultiplicityDiff;
+  std::vector<std::string> fTrackModules;
+  std::vector<int> fTrackMultiplicityDiff;
+  std::vector<std::string> fShowerModules;
+  std::vector<int>> fShowerMultiplicityDiff;
 
   double fVertexCut;
 
@@ -203,8 +205,10 @@ void nnbarEventAnalyzer::InitializeBranches() {
   fTree->Branch("ShowerEnergy","std::vector<double>",&fShowerEnergy);
 
   // Analysis variables
-  fTree->Branch("TrackMultiplicityDiff","std::vector<std::pair<std::string,int>>",&fTrackMultiplicityDiff);
-  fTree->Branch("ShowerMultiplicityDiff","std::vector<std::pair<std::string,int>>",&fShowerMultiplicityDiff);
+  fTree->Branch("TrackModules","std::vector<std::string>",&fTrackModules)
+  fTree->Branch("TrackMultiplicityDiff","std::vector<int>",&fTrackMultiplicityDiff);
+  fTree->Branch("ShowerModules","std::vector<std::string>",&fShowerModules)
+  fTree->Branch("ShowerMultiplicityDiff","std::vector<int>",&fShowerMultiplicityDiff);
 
   fTree->Branch("TrueEventMomentum",&fTrueEventMomentum,"TrueEventMomentum/D");
   fTree->Branch("TrueEventEnergy",&fTrueEventEnergy,"TrueEventEnergy/D");
@@ -242,7 +246,9 @@ void nnbarEventAnalyzer::ClearData() {
 
   fShowerEnergy.clear();
 
+  fTrackModules.clear();
   fTrackMultiplicityDiff.clear();
+  fShowerModules.clear();
   fShowerMultiplicityDiff.clear();
 
 } // function nnbarEventAnalyzer::ClearData
@@ -406,13 +412,15 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
     art::Handle<std::vector<recob::Track>> TrackModuleHandle;
     evt.getByLabel(TrackModule,TrackModuleHandle);
     int diff = TrackModuleHandle->size() - fNumberPrimariesTrackLike;
-    fTrackMultiplicityDiff.push_back(std::pair<std::string,int>(TrackModule,diff));
+    fTrackModules.push_back(TrackModule);
+    fTrackMultiplicityDiff.push_back(diff);
   }
   for (std::string ShowerModule : ShowerModules) {
     art::Handle<std::vector<recob::Shower>> ShowerModuleHandle;
     evt.getByLabel(ShowerModule,ShowerModuleHandle);
     int diff = ShowerModuleHandle->size() - fNumberPrimariesShowerLike;
-    fShowerMultiplicityDiff.push_back(std::pair<std::string,int>(ShowerModule,diff));
+    fShowerModules.push_back(ShowerModule);
+    fShowerMultiplicityDiff.push_back(diff);
   }
 
 // Vertexing

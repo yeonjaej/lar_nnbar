@@ -163,6 +163,9 @@ pm.draw_plot(sample,'ShowerMultiplicityDiff')
 #pm.draw_comparison_plot('EventMomentum',TrueEventMomentum,MCRecoEventMomentum,RecoEventMomentum,"Event momentum","Momentum [GeV]","Number of events",[0,2],50,1,False)
 #pm.draw_comparison_plot('EventEnergy',TrueEventEnergy,MCRecoEventEnergy,RecoEventEnergy,"Event energy","Energy [GeV]","Number of events",[0,2],50,1,False)
 
+pm.truth_only_plot(sample,'TrueEventMomentum',TrueEventMomentum,"Event momentum","Momentum [GeV]","Number of events",[0,2],50,1,False)
+pm.truth_only_plot(sample,'TrueEventEnergy',TrueEventEnergy,"Event energy","Energy [GeV]","Number of events",[0,2],50,1,False)
+
 pm.truth_reco_comparison(sample,'EventMomentum',TrueEventMomentum,RecoEventMomentum,"Event momentum","Momentum [GeV]","Number of events",[0,2],50,1,False)
 pm.truth_reco_comparison(sample,'EventEnergy',TrueEventEnergy,RecoEventEnergy,"Event energy","Energy [GeV]","Number of events",[0,2],50,1,False)
 
