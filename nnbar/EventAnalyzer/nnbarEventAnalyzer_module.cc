@@ -411,14 +411,14 @@ void nnbarEventAnalyzer::analyze(art::Event const& evt) {
   for (std::string TrackModule : TrackModules) {
     art::Handle<std::vector<recob::Track>> TrackModuleHandle;
     evt.getByLabel(TrackModule,TrackModuleHandle);
-    int diff = TrackModuleHandle->size() - fNumberPrimariesTrackLike;
+    int diff = fNumberPrimariesTrackLike - TrackModuleHandle->size();
     fTrackModules.push_back(TrackModule);
     fTrackMultiplicityDiff.push_back(diff);
   }
   for (std::string ShowerModule : ShowerModules) {
     art::Handle<std::vector<recob::Shower>> ShowerModuleHandle;
     evt.getByLabel(ShowerModule,ShowerModuleHandle);
-    int diff = ShowerModuleHandle->size() - fNumberPrimariesShowerLike;
+    int diff = fNumberPrimariesShowerLike - ShowerModuleHandle->size();
     fShowerModules.push_back(ShowerModule);
     fShowerMultiplicityDiff.push_back(diff);
   }
