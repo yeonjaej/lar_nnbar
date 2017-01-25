@@ -146,7 +146,7 @@ private:
   std::vector<std::string> fTrackModules;
   std::vector<int> fTrackMultiplicityDiff;
   std::vector<std::string> fShowerModules;
-  std::vector<int>> fShowerMultiplicityDiff;
+  std::vector<int> fShowerMultiplicityDiff;
 
   double fVertexCut;
 
@@ -205,9 +205,9 @@ void nnbarEventAnalyzer::InitializeBranches() {
   fTree->Branch("ShowerEnergy","std::vector<double>",&fShowerEnergy);
 
   // Analysis variables
-  fTree->Branch("TrackModules","std::vector<std::string>",&fTrackModules)
+  fTree->Branch("TrackModules","std::vector<std::string>",&fTrackModules);
   fTree->Branch("TrackMultiplicityDiff","std::vector<int>",&fTrackMultiplicityDiff);
-  fTree->Branch("ShowerModules","std::vector<std::string>",&fShowerModules)
+  fTree->Branch("ShowerModules","std::vector<std::string>",&fShowerModules);
   fTree->Branch("ShowerMultiplicityDiff","std::vector<int>",&fShowerMultiplicityDiff);
 
   fTree->Branch("TrueEventMomentum",&fTrueEventMomentum,"TrueEventMomentum/D");
