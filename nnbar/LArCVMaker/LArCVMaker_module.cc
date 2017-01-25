@@ -4,7 +4,7 @@
 #include "art/Framework/Principal/Event.h"
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Services/Optional/TFileService.h"
-#include "canvas/Utilities/InputTag.h"
+//#include "canvas/Utilities/InputTag.h"
 #include "fhiclcpp/ParameterSet.h"
 
 // data product includes
@@ -68,7 +68,7 @@ void LArCVMaker::beginJob() {
   fFirstTick = 1e5;
   fLastTick = -1;
 
-  bins.resize(22);
+  fBins.resize(22);
 
   if (!fTree) {
 
