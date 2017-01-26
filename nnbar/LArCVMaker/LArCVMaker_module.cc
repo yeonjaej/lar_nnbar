@@ -33,7 +33,7 @@ public:
 private:
 
   void ClearData();
-  void FillHist(int i);
+  void FillHist(float i);
 
   TTree* fTree;
   std::string fWireModuleLabel;
@@ -113,7 +113,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
     }
     float max_adc = -1;
     int tick_no = 0;
-    std::cout << "About to loop through time ticks on wire..." << std::endl;
+    //std::cout << "About to loop through time ticks on wire..." << std::endl;
     for (std::vector<float>::const_iterator adc = wire.Signal().begin();
         adc != wire.Signal().end(); ++adc) {
       if (*adc > max_adc) max_adc = *adc;
@@ -126,16 +126,19 @@ void LArCVMaker::analyze(art::Event const & evt) {
       }
       ++tick_no;
     }
-    std::cout << "Done looping through time ticks." << std::endl;
+    //std::cout << "Done looping through time ticks." << std::endl;
     fMaxADC.push_back(max_adc);
     ++wire_no;
   }
+  std::cout << "Done looping through wires on this event." << std::endl;
 
   fTree->Fill();
   ClearData();
+
+  std::cout << "Analyze function finished." << std::endl;
 } // function LArCVMaker::analyze
 
-void LArCVMaker::FillHist(int i) {
+void LArCVMaker::FillHist(float i) {
 
   for (int it = 0; it < 20; ++it) {
     if (i < (10 * it)) {
