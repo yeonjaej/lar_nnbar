@@ -64,13 +64,6 @@ void LArCVMaker::ClearData() {
 
 void LArCVMaker::beginJob() {
 
-  fFirstWire = 1e5;
-  fLastWire = -1;
-  fFirstTick = 1e5;
-  fLastTick = -1;
-
-  fBins.resize(22);
-
   if (!fTree) {
 
     art::ServiceHandle<art::TFileService> tfs;
@@ -90,6 +83,13 @@ void LArCVMaker::beginJob() {
 } // function LArCVMaker::beginJob
 
 void LArCVMaker::analyze(art::Event const & evt) {
+
+  fFirstWire = 1e5;
+  fLastWire = -1;
+  fFirstTick = 1e5;
+  fLastTick = -1;
+
+  fBins.resize(22);
 
   art::Handle<std::vector<recob::Wire>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
