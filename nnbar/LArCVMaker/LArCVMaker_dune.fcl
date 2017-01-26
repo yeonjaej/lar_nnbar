@@ -3,7 +3,7 @@ BEGIN_PROLOG
 LArCVMaker:
 {
  module_type:             "nnbar/LArCVMaker/LArCVMaker"
- WireModuleLabel:         "i should really find this out"
+ WireModuleLabel:         "caldata"
 }
 
 END_PROLOG

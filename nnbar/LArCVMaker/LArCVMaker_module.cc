@@ -22,7 +22,7 @@
 #include <string>
 #include <algorithm>
 
-namespace dune {
+namespace nnbar {
 
 class LArCVMaker : public art::EDAnalyzer {
   
@@ -144,5 +144,5 @@ void LArCVMaker::FillHist(int i) {
   ++fBins[22];
 } // LArCVMaker::FillHist
 
-} // namespace dune
+} // namespace nnbar
 
