@@ -44,10 +44,10 @@ private:
 
   std::vector<int> fBins;
 
-  int fFirstWire = 1e5;
-  int fLastWire = -1;
-  int fFirstTick = 1e5;
-  int fLastTick = -1;
+  int fFirstWire;
+  int fLastWire;
+  int fFirstTick;
+  int fLastTick;
 }; // class LArCVMaker
 
 LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
@@ -137,13 +137,13 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
 void LArCVMaker::FillHist(int i) {
 
-  for (int it = 0; it < 21; ++it) {
+  for (int it = 0; it < 20; ++it) {
     if (i < (10 * it)) {
       ++fBins[i];
       return;
     }
   }
-  ++fBins[22];
+  ++fBins[21];
 } // function LArCVMaker::FillHist
 
 DEFINE_ART_MODULE(LArCVMaker)
