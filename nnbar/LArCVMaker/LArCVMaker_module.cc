@@ -4,6 +4,7 @@
 //#include "art/Framework/Principal/Event.h"
 //#include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Services/Optional/TFileService.h"
+#include "canvas/Persistency/Provenance/ModuleDescription.h"
 //#include "canvas/Utilities/InputTag.h"
 #include "fhiclcpp/ParameterSet.h"
 
