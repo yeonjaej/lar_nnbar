@@ -145,5 +145,7 @@ void LArCVMaker::FillHist(int i) {
   ++fBins[22];
 } // LArCVMaker::FillHist
 
+DEFINE_ART_MODULE(LArCVMaker)
+
 } // namespace nnbar
 
