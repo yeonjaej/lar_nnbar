@@ -84,6 +84,8 @@ void LArCVMaker::beginJob() {
 
 void LArCVMaker::analyze(art::Event const & evt) {
 
+  ClearData();
+
   fFirstWire = 1e5;
   fLastWire = -1;
   fFirstTick = 1e5;
@@ -99,18 +101,15 @@ void LArCVMaker::analyze(art::Event const & evt) {
   int fADCCut = 20;
   int wire_no = 0;
 
-  std::cout << "Running through all wires..." << std::endl;
-
   for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
     const recob::Wire & wire = *it;
-    std::cout << "Processing wire number " << wire.Channel() << " in plane " << wire.View() << "..." << std::endl;
+
     if (it == wireh->begin())
       fNumberTicks = wire.Signal().size();
-    else {
-      if (fNumberTicks != (int)wire.Signal().size())
-        throw cet::exception("LArCVMaker") << "Number of time ticks is not consistent between wires!";
-    }
+    else if (fNumberTicks != (int)wire.Signal().size())
+      throw cet::exception("LArCVMaker") << "Number of time ticks is not consistent between wires!";
+
     float max_adc = -1;
     int tick_no = 0;
     //std::cout << "About to loop through time ticks on wire..." << std::endl;
@@ -133,7 +132,6 @@ void LArCVMaker::analyze(art::Event const & evt) {
   std::cout << "Done looping through wires on this event." << std::endl;
 
   fTree->Fill();
-  ClearData();
 
   std::cout << "Analyze function finished." << std::endl;
 } // function LArCVMaker::analyze
