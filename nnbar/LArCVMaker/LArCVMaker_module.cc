@@ -116,6 +116,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
     for (std::vector<float>::const_iterator adc = wire.Signal().begin();
         adc != wire.Signal().end(); ++adc) {
       if (*adc > max_adc) max_adc = *adc;
+      std::cout << "ADC is " << *adc << std::endl;
       FillHist(*adc);
       if (*adc > fADCCut) {
         if (fFirstWire > wire_no) fFirstWire = wire_no;
