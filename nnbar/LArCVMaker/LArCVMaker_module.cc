@@ -32,17 +32,13 @@ public:
 
 private:
 
-  void ClearData();
-  void FillHist(float i);
+//  void ClearData();
 
   TTree* fTree;
   std::string fWireModuleLabel;
 
   int fNumberWires;
   int fNumberTicks;
-  std::vector<float> fMaxADC;
-
-  std::vector<int> fBins;
 
   int fFirstWire;
   int fLastWire;
@@ -56,11 +52,9 @@ LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
     fWireModuleLabel(pset.get<std::string>("WireModuleLabel"))
 {} // function LArCVMaker::LArCVMaker
 
-void LArCVMaker::ClearData() {
+//void LArCVMaker::ClearData() {
 
-  fMaxADC.clear();
-  fBins.clear();
-} // function LArCVMaker::ClearData
+//} // function LArCVMaker::ClearData
 
 void LArCVMaker::beginJob() {
 
@@ -68,12 +62,6 @@ void LArCVMaker::beginJob() {
 
     art::ServiceHandle<art::TFileService> tfs;
     fTree = tfs->make<TTree>("LArCV","LArCV tree");
-
-    fTree->Branch("NumberWires",&fNumberWires,"NumberWires/I");
-    fTree->Branch("NumberTicks",&fNumberTicks,"NumberTicks/I");
-    fTree->Branch("MaxADC","std::vector<float>",&fMaxADC);
-
-    fTree->Branch("Bins","std::vector<int>",&fBins);
 
     fTree->Branch("FirstWire",&fFirstWire,"FirstWire/I");
     fTree->Branch("LastWire",&fLastWire,"LastWire/I");
@@ -84,69 +72,43 @@ void LArCVMaker::beginJob() {
 
 void LArCVMaker::analyze(art::Event const & evt) {
 
-  ClearData();
-
-  fFirstWire = 1e5;
-  fLastWire = -1;
-  fFirstTick = 1e5;
-  fLastTick = -1;
-
-  fBins.resize(22);
+//  ClearData();
 
   art::Handle<std::vector<recob::Wire>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
 
   fNumberWires = wireh->size();
 
-  int fADCCut = 20;
-  int wire_no = 0;
+  int adc_cut = 20;
+
+  fFirstWire = -1;
+  fLastWire = -1;
+  fFirstTick = -1;
+  fLastTick = -1;
 
   for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
     const recob::Wire & wire = *it;
 
-    if (it == wireh->begin())
-      fNumberTicks = wire.Signal().size();
-    else if (fNumberTicks != (int)wire.Signal().size())
-      throw cet::exception("LArCVMaker") << "Number of time ticks is not consistent between wires!";
+    if (wire.View() != 2) continue;
 
-    float max_adc = -1;
-    int tick_no = 0;
-    //std::cout << "About to loop through time ticks on wire..." << std::endl;
-    for (std::vector<float>::const_iterator adc = wire.Signal().begin();
-        adc != wire.Signal().end(); ++adc) {
-      if (*adc > max_adc) max_adc = *adc;
-      std::cout << "ADC is " << *adc << std::endl;
-      FillHist(*adc);
-      if (*adc > fADCCut) {
-        if (fFirstWire > wire_no) fFirstWire = wire_no;
-        if (fLastWire < wire_no) fLastWire = wire_no;
-        if (fFirstTick > tick_no) fFirstTick = tick_no;
-        if (fLastTick < tick_no) fLastTick = tick_no;
+    for (int tick = 0; tick < (int)wire.Signal().size(); tick++) {
+      float adc = wire.Signal()[tick];
+      if (adc > adc_cut) {
+        if (fFirstWire == -1 || fFirstWire > (int)wire.Channel()) fFirstWire = wire.Channel();
+        if (fLastWire == -1 || fLastWire < (int)wire.Channel()) fLastWire = wire.Channel();
+        if (fFirstTick == -1 || fFirstTick > tick) fFirstTick = tick;
+        if (fLastTick == -1 || fLastTick < tick) fLastTick = tick;
       }
-      ++tick_no;
     }
-    //std::cout << "Done looping through time ticks." << std::endl;
-    fMaxADC.push_back(max_adc);
-    ++wire_no;
   }
-  std::cout << "Done looping through wires on this event." << std::endl;
+  std::cout << "First tick is " << fFirstTick << ", last tick is " << fLastTick << "." << std::endl;
+  std::cout << "First wire is " << fFirstWire << ", last wire is " << fLastWire << "." << std::endl;
 
   fTree->Fill();
 
   std::cout << "Analyze function finished." << std::endl;
 } // function LArCVMaker::analyze
-
-void LArCVMaker::FillHist(float i) {
-
-  for (int it = 0; it < 20; ++it) {
-    if (i < (10 * it)) {
-      ++fBins[i];
-      return;
-    }
-  }
-  ++fBins[21];
-} // function LArCVMaker::FillHist
 
 DEFINE_ART_MODULE(LArCVMaker)
 
