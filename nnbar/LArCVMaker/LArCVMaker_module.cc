@@ -42,12 +42,14 @@ private:
   int fNumberWires;
   int fNumberTicks;
 
+  int fFirstAPA;
+  int fLastAPA;
   int fFirstWire;
   int fLastWire;
   int fFirstTick;
   int fLastTick;
 
-  std::vector<std::vector<float>> fImageZ;
+  std::vector<std::vector<std::vector<float>>> fImageZ;
 }; // class LArCVMaker
 
 LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
@@ -72,8 +74,14 @@ void LArCVMaker::GetNumberOfWires(int view) {
     int first_apa = std::floor(fFirstWire / 2560.);
     int last_apa = std::floor(fLastWire / 2560.);
     std::cout << "First APA is " << first_apa << ", last APA is " << last_apa << "." << std::endl;
-  }
 
+    // first APA
+    int first_wire = fFirstWire;
+    int last_wire = 2560 * first_apa;
+    //for (int it = first_wire; it < last_wire; ++it) {
+
+    }
+  }
 } // function LArCVMaker::GetNumberOfWires
 
 void LArCVMaker::beginJob() {
@@ -101,6 +109,8 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
   int adc_cut = 20;
 
+  fFirstAPA = -1;
+  fLastAPA = -1;
   fFirstWire = -1;
   fLastWire = -1;
   fFirstTick = -1;
@@ -109,6 +119,8 @@ void LArCVMaker::analyze(art::Event const & evt) {
   for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
     const recob::Wire & wire = *it;
+
+    std::cout << "Iterator value is " << it << "." << std::endl;
 
     if (wire.View() != 2) continue;
 
