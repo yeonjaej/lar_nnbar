@@ -80,7 +80,7 @@ void LArCVMaker::GetNumberOfWires(int view) {
     int last_wire = 2560 * first_apa;
     //for (int it = first_wire; it < last_wire; ++it) {
 
-    }
+    //}
   }
 } // function LArCVMaker::GetNumberOfWires
 
