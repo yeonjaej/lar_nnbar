@@ -34,7 +34,8 @@ public:
 private:
 
   void ClearData();
-  void GetNumberOfWires(int view);
+  void SetupAPAs();
+  void ProcessWire(recob::Wire w);
 
   TTree* fTree;
   std::string fWireModuleLabel;
@@ -63,25 +64,34 @@ void LArCVMaker::ClearData() {
   fImageZ.clear();
 } // function LArCVMaker::ClearData
 
-void LArCVMaker::GetNumberOfWires(int view) {
+void LArCVMaker::SetupAPAs() {
 
-  // this is how it's supposed to work
-  // there are 2560 wires per apa
-  // the last 960 are z plane
+  fFirstAPA = std::floor(fFirstWire / 2560.);
+  fLastAPA = std::floor(fLastWire / 2560.);
+  fImageZ.resize(fLastAPA - fFirstAPA + 1);
+}
 
-  if (view == 2) {
-    // get apa of first wire
-    int first_apa = std::floor(fFirstWire / 2560.);
-    int last_apa = std::floor(fLastWire / 2560.);
-    std::cout << "First APA is " << first_apa << ", last APA is " << last_apa << "." << std::endl;
+void LArCVMaker::ProcessWire(recob::Wire w) {
 
-    // first APA
-    int first_wire = fFirstWire;
-    int last_wire = 2560 * first_apa;
-    //for (int it = first_wire; it < last_wire; ++it) {
+  if (w.View() != 2 || wire.Channel() < fFirstWire || wire.Channel() > fLastChannel) return;
+  int channel_apa = std::floor(wire.Channel() / 2560.);
+  int channel_it = wire.Channel() - (2560 * channel_apa) - 1600;
+  int apa_it = channel_apa - fFirstAPA;
 
-    //}
+  // make placeholder adc data
+  int n_ticks = fLastTick - fFirstWire + 1;
+  std::vector<float> empty_channel;
+  empty_channel.resize(n_ticks);
+
+  // get adc data
+  it_first = wire.Signal().begin() + fFirstTick;
+  it_last = wire.Signal().begin() + fLastTick + 1;
+  std::vector<float> this_channel(it_first,it_last);
+
+  while ((int)fImageZ[apa_it].size() < channel_it-1) {
+    fImageZ[apa_it].push_back(empty_channel);
   }
+  fImageZ[apa_it].push_back(this_channel);
 } // function LArCVMaker::GetNumberOfWires
 
 void LArCVMaker::beginJob() {
@@ -91,12 +101,14 @@ void LArCVMaker::beginJob() {
     art::ServiceHandle<art::TFileService> tfs;
     fTree = tfs->make<TTree>("LArCV","LArCV tree");
 
+    fTree->Branch("FirstAPA",&fFirstAPA,"FirstAPA/I");
+    fTree->Branch("LastAPA",&fLastAPA,"LastAPA/I");
     fTree->Branch("FirstWire",&fFirstWire,"FirstWire/I");
     fTree->Branch("LastWire",&fLastWire,"LastWire/I");
     fTree->Branch("FirstTick",&fFirstTick,"FirstTick/I");
     fTree->Branch("LastTick",&fFirstTick,"LastTick/I");
 
-    fTree->Branch("ImageZ","std::vector<std::vector<float>>",&fImageZ);
+    fTree->Branch("ImageZ","std::vector<std::vector<std::vector<float>>>",&fImageZ);
   }
 } // function LArCVMaker::beginJob
 
@@ -137,23 +149,13 @@ void LArCVMaker::analyze(art::Event const & evt) {
   std::cout << "First tick is " << fFirstTick << ", last tick is " << fLastTick << "." << std::endl;
   std::cout << "First wire is " << fFirstWire << ", last wire is " << fLastWire << "." << std::endl;
 
-  GetNumberOfWires(2);
+  SetupAPAs();
 
-  // int number_wires = fLastWire - fFirstWire + 1;
-  // int number_ticks = fLastTick - fFirstTick + 1;
-
-  // for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
-  //     it != wireh->end(); ++it) {
-  //   const recob::Wire & wire = *it;
-
-  //   std::vector<float> wire_adcs;
-  //   wire_adcs.resize()
-
-  //   it_first = wire.Signal().begin() + fFirstTick;
-  //   it_last = wire.Signal().begin() + fLastTick + 1;
-  //   std::vector<float> adcs(it_first,it_last);
-  //   fImageZ.push_back(adcs);
-  // }
+  for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
+      it != wireh->end(); ++it) {
+    const recob::Wire & wire = *it;
+    ProcessWire(wire);
+  }
 
   fTree->Fill();
   ClearData();
