@@ -100,7 +100,7 @@ void LArCVMaker::Downsample(int order) {
           int apa = std::floor(wire_address / 2560);
           wire_address += fFirstWire + (1600*apa);
           if (GetPlane(wire_address) != 2) return;
-          int time_address = (order*it_y) + y;
+          int time_address = fFirstTick + (order*it_y) + y;
           if (fWireMap.find(wire_address) != fWireMap.end()) {
             adc = fWireMap[wire_address][time_address];
             if (adc != 0) std::cout << "Non-zero ADC value " << adc << " found!" << std::endl;
@@ -180,8 +180,8 @@ void LArCVMaker::analyze(art::Event const & evt) {
     const recob::Wire & wire = *it;
     if (wire.View() != 2) continue;
 
-    std::vector<float> time(wire.Signal());
-    fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),time));
+    std::cout << "Adding wire with channel number " << wire.Channel() << "." << std::endl;
+    fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),std::vector<float>(wire.Signal())));
 
     for (int tick = 0; tick < (int)wire.Signal().size(); ++tick) {
       float adc = wire.Signal()[tick];
@@ -207,6 +207,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
   else Downsample(1);
 
   fTree->Fill();
+  ClearData();
 
   // for (int it = fFirstWire; it <= fLastWire; ++it) {
   //   if (GetPlane(it) != 2) continue;
