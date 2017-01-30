@@ -4,6 +4,7 @@ LArCVMaker:
 {
  module_type:             "nnbar/LArCVMaker/LArCVMaker"
  WireModuleLabel:         "caldata"
+ ADCCut:                  20
 }
 
 END_PROLOG
