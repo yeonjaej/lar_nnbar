@@ -35,12 +35,13 @@ public:
 private:
 
   void ClearData();
+  int GetPlane(int channel);
   void SetupAPAs();
-  void PadVector(std::vector<float> & vec, int new_size, int n_ticks);
   void ProcessWire(recob::Wire w);
 
   TTree* fTree;
   std::string fWireModuleLabel;
+  int fADCCut;
 
   int fFirstAPA;
   int fLastAPA;
@@ -58,7 +59,8 @@ private:
 LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
     EDAnalyzer(pset),
     fTree(nullptr),
-    fWireModuleLabel(pset.get<std::string>("WireModuleLabel"))
+    fWireModuleLabel(pset.get<std::string>("WireModuleLabel")),
+    fADCCut(pset.get<int>("ADCCut"))
 {} // function LArCVMaker::LArCVMaker
 
 void LArCVMaker::ClearData() {
@@ -66,26 +68,19 @@ void LArCVMaker::ClearData() {
   fImageZ.clear();
 } // function LArCVMaker::ClearData
 
+int LArCVMaker::GetPlane(int channel) {
+
+  if (channel % 2560 < 800) return 0;
+  else if (channel % 2560 < 1600) return 1;
+  else if (channel % 2560 < 2560) return 2;
+  else return -1;
+}
+
 void LArCVMaker::SetupAPAs() {
 
   fFirstAPA = std::floor(fFirstWire / 2560.);
   fLastAPA = std::floor(fLastWire / 2560.);
 }  // function LArCVMaker::setupAPAs
-
-void LArCVMaker::PadVector(std::vector<float> & vec, int new_size, int n_ticks) {
-
-  std::vector<float> empty_channel;
-  empty_channel.resize(n_ticks);
-
-  int n_wires = vec.size() / n_ticks;
-  if (n_wires < new_size) {
-    vec.insert(vec.end(),empty_channel.begin(),empty_channel.end());
-    n_wires = vec.size() / n_ticks;
-    std::cout << "Resizing vector, adding " << new_size-n_wires << " new wires with " << n_ticks
-        << " new time ticks, total " << n_ticks*(new_size-n_wires) << " new entries." << std::endl;
-    vec.resize(vec.size() + (n_ticks*(new_size-n_wires)));
-  }
-} // function LArCVMaker::PadVector
 
 void LArCVMaker::ProcessWire(recob::Wire w) {
 
@@ -135,8 +130,6 @@ void LArCVMaker::analyze(art::Event const & evt) {
   art::Handle<std::vector<recob::Wire>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
 
-  int adc_cut = 50;
-
   fFirstAPA = -1;
   fLastAPA = -1;
   fFirstWire = -1;
@@ -155,7 +148,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
     for (int tick = 0; tick < (int)wire.Signal().size(); ++tick) {
       float adc = wire.Signal()[tick];
       if (adc > max_adc) max_adc = adc;
-      if (adc > adc_cut) {
+      if (adc > fADCCut) {
         if (fFirstWire == -1 || fFirstWire > (int)wire.Channel()) fFirstWire = wire.Channel();
         if (fLastWire == -1 || fLastWire < (int)wire.Channel()) fLastWire = wire.Channel();
         if (fFirstTick == -1 || fFirstTick > tick) fFirstTick = tick;
@@ -164,38 +157,41 @@ void LArCVMaker::analyze(art::Event const & evt) {
     }
   }
 
-  std::cout << " done." << std::endl;
-  std::cout << "Max ADC value in this event is " << max_adc << "." << std::endl;
-  std::cout << "First tick is " << fFirstTick << ", last tick is " << fLastTick << "." << std::endl;
-  std::cout << "First wire is " << fFirstWire << ", last wire is " << fLastWire << "." << std::endl;
-  std::cout << "Setting up APAs...";
+  std::cout << "Number of "
+  std::cout << "Size of channel vector is " << wireh->size() << "." << std::endl;
 
-  SetupAPAs();
+  // std::cout << " done." << std::endl;
+  // std::cout << "Max ADC value in this event is " << max_adc << "." << std::endl;
+  // std::cout << "First tick is " << fFirstTick << ", last tick is " << fLastTick << "." << std::endl;
+  // std::cout << "First wire is " << fFirstWire << ", last wire is " << fLastWire << "." << std::endl;
+  // std::cout << "Setting up APAs...";
 
-  std::cout << " done." << std::endl;
-  std::cout << "Processing wires..." << std::endl;
+  // SetupAPAs();
 
-  for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
-      it != wireh->end(); ++it) {
-    const recob::Wire & wire = *it;
-    int current_apa = std::floor(wire.Channel() / 2560.);
-    if (it == wireh->begin()) fAPA = current_apa;
-    else if (current_apa != fAPA) {
-      fAPA = current_apa;
-      if (fImageZ.size()/fNumberTicks < 960) PadVector(fImageZ,960,fNumberTicks);
-      std::cout << "Size of fImageZ is " << fImageZ.size() << "." << std::endl;
-      fTree->Fill();
-      ClearData();
-    }
-    std::cout << "About to call ProcessWire...";
-    ProcessWire(wire);
-    std::cout << " done." << std::endl;
-  }
-  if (fImageZ.size()/fNumberTicks < 960) PadVector(fImageZ,960,fNumberTicks);
-  fTree->Fill();
-  ClearData();
+  // std::cout << " done." << std::endl;
+  // std::cout << "Processing wires..." << std::endl;
 
-  std::cout << " done." << std::endl;
+  // for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
+  //     it != wireh->end(); ++it) {
+  //   const recob::Wire & wire = *it;
+  //   int current_apa = std::floor(wire.Channel() / 2560.);
+  //   if (it == wireh->begin()) fAPA = current_apa;
+  //   else if (current_apa != fAPA) {
+  //     fAPA = current_apa;
+  //     if (fImageZ.size()/fNumberTicks < 960) PadVector(fImageZ,960,fNumberTicks);
+  //     std::cout << "Size of fImageZ is " << fImageZ.size() << "." << std::endl;
+  //     fTree->Fill();
+  //     ClearData();
+  //   }
+  //   std::cout << "About to call ProcessWire...";
+  //   ProcessWire(wire);
+  //   std::cout << " done." << std::endl;
+  // }
+  // if (fImageZ.size()/fNumberTicks < 960) PadVector(fImageZ,960,fNumberTicks);
+  // fTree->Fill();
+  // ClearData();
+
+  // std::cout << " done." << std::endl;
 } // function LArCVMaker::analyze
 
 DEFINE_ART_MODULE(LArCVMaker)
