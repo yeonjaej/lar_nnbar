@@ -20,6 +20,7 @@
 #include <string>
 #include <algorithm>
 #include <cmath>
+#include <map>
 
 namespace nnbar {
 
@@ -75,12 +76,6 @@ int LArCVMaker::GetPlane(int channel) {
   else if (channel % 2560 < 2560) return 2;
   else return -1;
 }
-
-void LArCVMaker::SetupAPAs() {
-
-  fFirstAPA = std::floor(fFirstWire / 2560.);
-  fLastAPA = std::floor(fLastWire / 2560.);
-}  // function LArCVMaker::setupAPAs
 
 // void LArCVMaker::ProcessWire(recob::Wire w) {
 
@@ -139,9 +134,13 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
   std::cout << "Looping over wires to find ROI...";
 
+  std::map<int,recob::wire> WireMap;
+
   for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
     const recob::Wire & wire = *it;
+
+    WireMap.emplace(wire.Channel(),wire);
 
     if (wire.View() != 2) continue;
 
@@ -157,8 +156,26 @@ void LArCVMaker::analyze(art::Event const & evt) {
     }
   }
 
-  //std::cout << "Number of "
-  std::cout << "Size of channel vector is " << wireh->size() << "." << std::endl;
+  fFirstAPA = std::floor(fFirstWire / 2560.);
+  fLastAPA = std::floor(fLastWire / 2560.);
+  int NAPABoundaries = fLastAPA - fFirstAPA;
+  int NTicks = fLastTick - fFirstTick + 1;
+  int NWires = fLastWire - fFirstWire + 1 - (1600*NAPABoundaries);
+
+  std::cout << "Original resolution of image is " << NWires << "x" << NTicks << "." << std::endl;
+  if (NWires > 600 || NTicks > 600) {
+    std::cout << "Can be reduced to " << NWires/4 << "x" << NTicks/4 << "." << std::endl;
+    if (NWires > 2400 || NTicks > 2400) {
+      std::cout << "Can be further reduced to " << NWires/9 << "x" << NTicks/9 << "." << std::endl;
+    }
+  }
+
+  // for (int it = fFirstWire; it <= fLastWire; ++it) {
+  //   if (GetPlane(it) != 2) continue;
+  //   ++NWires;
+  // }
+
+  // std::cout << "Number of "
 
   // std::cout << " done." << std::endl;
   // std::cout << "Max ADC value in this event is " << max_adc << "." << std::endl;
