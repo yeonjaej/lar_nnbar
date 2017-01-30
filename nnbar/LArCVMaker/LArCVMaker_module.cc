@@ -37,7 +37,8 @@ private:
 
   void ClearData();
   int GetPlane(int channel);
-  void SetupAPAs();
+  void DownsampleTwoPixel();
+  void DownsampleThreePixel();
   // void ProcessWire(recob::Wire w);
 
   TTree* fTree;
@@ -54,6 +55,8 @@ private:
   int fEvent;
   int fAPA;
   int fNumberTicks;
+
+  std::map<int,recob::Wire> fWireMap;
   std::vector<float> fImageZ;
 }; // class LArCVMaker
 
@@ -66,6 +69,7 @@ LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
 
 void LArCVMaker::ClearData() {
 
+  fWireMap.clear();
   fImageZ.clear();
 } // function LArCVMaker::ClearData
 
@@ -75,7 +79,34 @@ int LArCVMaker::GetPlane(int channel) {
   else if (channel % 2560 < 1600) return 1;
   else if (channel % 2560 < 2560) return 2;
   else return -1;
-}
+} // function LArCVMaker::GetPlane
+
+void LArCVMaker::Downsample(int order) {
+
+  int n_x = std::ceil(NWires/order);
+  int n_y = std::ceil(NTicks/order);
+
+  for (int it_x = 0; it_x < n_x; ++it_x) {
+    for (int it_y = 0; it_y < n_y; ++it_y) {
+      float pixel = 0;
+      for (int x = 0; x < order; ++x) {
+        for (int y = 0; y < order; ++y) {
+          float adc;
+          int wire_address = (order*it_x) + x;
+          int time_address = (order*it_y) + y;
+          try {
+            adc = fWireMap[wire_address].Signal()[time_address];
+          } catch {
+            adc = 0;
+          }
+          pixel += adc;
+        }
+      }
+      pixel /= pow(order,2);
+      fImageZ.push_back(pixel);
+    }
+  }
+} // function LArCVMaker::Downsample
 
 // void LArCVMaker::ProcessWire(recob::Wire w) {
 
@@ -110,6 +141,7 @@ void LArCVMaker::beginJob() {
     fTree->Branch("Event",&fEvent,"Event/I");
     fTree->Branch("APA",&fAPA,"APA/I");
     fTree->Branch("NumberTicks",&fNumberTicks,"NumberTicks/I");
+
     fTree->Branch("ImageZ","std::vector<float>",&fImageZ);
   }
 } // function LArCVMaker::beginJob
@@ -120,7 +152,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
   fEvent = evt.event();
 
-  std::cout << "Beginning analyze function..." << std::endl;
+  // std::cout << "Beginning analyze function..." << std::endl;
 
   art::Handle<std::vector<recob::Wire>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
@@ -132,17 +164,14 @@ void LArCVMaker::analyze(art::Event const & evt) {
   fFirstTick = -1;
   fLastTick = -1;
 
-  std::cout << "Looping over wires to find ROI...";
-
-  std::map<int,recob::Wire> WireMap;
+  // std::cout << "Looping over wires to find ROI...";
 
   for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
     const recob::Wire & wire = *it;
-
-    WireMap.emplace(wire.Channel(),wire);
-
     if (wire.View() != 2) continue;
+
+    fWireMap.emplace(wire.Channel(),wire);
 
     for (int tick = 0; tick < (int)wire.Signal().size(); ++tick) {
       float adc = wire.Signal()[tick];
@@ -163,12 +192,11 @@ void LArCVMaker::analyze(art::Event const & evt) {
   int NWires = fLastWire - fFirstWire + 1 - (1600*NAPABoundaries);
 
   std::cout << "Original resolution of image is " << NWires << "x" << NTicks << "." << std::endl;
-  if (NWires > 600 || NTicks > 600) {
-    std::cout << "Can be reduced to " << NWires/4 << "x" << NTicks/4 << "." << std::endl;
-    if (NWires > 2400 || NTicks > 2400) {
-      std::cout << "Can be further reduced to " << NWires/9 << "x" << NTicks/9 << "." << std::endl;
-    }
-  }
+  if (NWires > 2400 || NTicks > 2400) Downsample(3);
+  else if (NWires > 600 || NTicks > 600) Downsample(2);
+  else Downsample(1);
+
+  fTree->Fill();
 
   // for (int it = fFirstWire; it <= fLastWire; ++it) {
   //   if (GetPlane(it) != 2) continue;
