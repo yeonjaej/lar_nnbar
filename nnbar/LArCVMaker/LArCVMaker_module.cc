@@ -134,7 +134,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
   std::cout << "Looping over wires to find ROI...";
 
-  std::map<int,recob::wire> WireMap;
+  std::map<int,recob::Wire> WireMap;
 
   for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
