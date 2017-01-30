@@ -37,7 +37,7 @@ private:
   void ClearData();
   int GetPlane(int channel);
   void SetupAPAs();
-  void ProcessWire(recob::Wire w);
+  // void ProcessWire(recob::Wire w);
 
   TTree* fTree;
   std::string fWireModuleLabel;
@@ -82,21 +82,21 @@ void LArCVMaker::SetupAPAs() {
   fLastAPA = std::floor(fLastWire / 2560.);
 }  // function LArCVMaker::setupAPAs
 
-void LArCVMaker::ProcessWire(recob::Wire w) {
+// void LArCVMaker::ProcessWire(recob::Wire w) {
 
-  if (w.View() != 2 || (int)w.Channel() < fFirstWire || (int)w.Channel() > fLastWire) return;
-  int channel_apa = std::floor(w.Channel() / 2560.);
-  int channel_it = w.Channel() - (2560 * channel_apa) - 1600;
+//   if (w.View() != 2 || (int)w.Channel() < fFirstWire || (int)w.Channel() > fLastWire) return;
+//   int channel_apa = std::floor(w.Channel() / 2560.);
+//   int channel_it = w.Channel() - (2560 * channel_apa) - 1600;
 
-  int n_ticks = fLastTick - fFirstTick + 1;
+//   int n_ticks = fLastTick - fFirstTick + 1;
 
-  // get adc data
-  std::vector<float>::const_iterator it_first = w.Signal().begin() + fFirstTick;
-  std::vector<float>::const_iterator it_last = w.Signal().begin() + fLastTick + 1;
+//   // get adc data
+//   std::vector<float>::const_iterator it_first = w.Signal().begin() + fFirstTick;
+//   std::vector<float>::const_iterator it_last = w.Signal().begin() + fLastTick + 1;
 
-  PadVector(fImageZ, channel_it-1, n_ticks);
-  fImageZ.insert(fImageZ.end(),it_first,it_last);
-} // function LArCVMaker::GetNumberOfWires
+//   PadVector(fImageZ, channel_it-1, n_ticks);
+//   fImageZ.insert(fImageZ.end(),it_first,it_last);
+// } // function LArCVMaker::GetNumberOfWires
 
 void LArCVMaker::beginJob() {
 
@@ -157,7 +157,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
     }
   }
 
-  std::cout << "Number of "
+  //std::cout << "Number of "
   std::cout << "Size of channel vector is " << wireh->size() << "." << std::endl;
 
   // std::cout << " done." << std::endl;
