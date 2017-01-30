@@ -37,8 +37,7 @@ private:
 
   void ClearData();
   int GetPlane(int channel);
-  void DownsampleTwoPixel();
-  void DownsampleThreePixel();
+  void Downsample(int order);
   // void ProcessWire(recob::Wire w);
 
   TTree* fTree;
@@ -54,9 +53,10 @@ private:
 
   int fEvent;
   int fAPA;
+  int fNumberWires;
   int fNumberTicks;
 
-  std::map<int,recob::Wire> fWireMap;
+  std::map<int,std::vector<float>> fWireMap;
   std::vector<float> fImageZ;
 }; // class LArCVMaker
 
@@ -83,26 +83,34 @@ int LArCVMaker::GetPlane(int channel) {
 
 void LArCVMaker::Downsample(int order) {
 
-  int n_x = std::ceil(NWires/order);
-  int n_y = std::ceil(NTicks/order);
+  std::cout << "Function Downsample called with order " << order << "." << std::endl;
 
-  for (int it_x = 0; it_x < n_x; ++it_x) {
-    for (int it_y = 0; it_y < n_y; ++it_y) {
+  fNumberWires = std::ceil(fNumberWires/order);
+  fNumberTicks = std::ceil(fNumberTicks/order);
+
+  std::cout << "New resolution is " << fNumberWires << "x" << fNumberTicks << "." << std::endl;
+
+  for (int it_x = 0; it_x < fNumberWires; ++it_x) {
+    for (int it_y = 0; it_y < fNumberTicks; ++it_y) {
       float pixel = 0;
       for (int x = 0; x < order; ++x) {
         for (int y = 0; y < order; ++y) {
           float adc;
           int wire_address = (order*it_x) + x;
+          int apa = std::floor(wire_address / 2560);
+          wire_address += fFirstWire + (1600*apa);
+          if (GetPlane(wire_address) != 2) return;
           int time_address = (order*it_y) + y;
-          try {
-            adc = fWireMap[wire_address].Signal()[time_address];
-          } catch {
-            adc = 0;
+          if (fWireMap.find(wire_address) != fWireMap.end()) {
+            adc = fWireMap[wire_address][time_address];
+            if (adc != 0) std::cout << "Non-zero ADC value " << adc << " found!" << std::endl;
           }
+          else adc = 0;
           pixel += adc;
         }
       }
       pixel /= pow(order,2);
+      // std::cout << "Averaged pixel value is " << pixel << "." << std::endl;
       fImageZ.push_back(pixel);
     }
   }
@@ -140,6 +148,7 @@ void LArCVMaker::beginJob() {
 
     fTree->Branch("Event",&fEvent,"Event/I");
     fTree->Branch("APA",&fAPA,"APA/I");
+    fTree->Branch("NumberWires",&fNumberWires,"NumberWires/I");
     fTree->Branch("NumberTicks",&fNumberTicks,"NumberTicks/I");
 
     fTree->Branch("ImageZ","std::vector<float>",&fImageZ);
@@ -171,7 +180,8 @@ void LArCVMaker::analyze(art::Event const & evt) {
     const recob::Wire & wire = *it;
     if (wire.View() != 2) continue;
 
-    fWireMap.emplace(wire.Channel(),wire);
+    std::vector<float> time(wire.Signal());
+    fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),time));
 
     for (int tick = 0; tick < (int)wire.Signal().size(); ++tick) {
       float adc = wire.Signal()[tick];
@@ -188,12 +198,12 @@ void LArCVMaker::analyze(art::Event const & evt) {
   fFirstAPA = std::floor(fFirstWire / 2560.);
   fLastAPA = std::floor(fLastWire / 2560.);
   int NAPABoundaries = fLastAPA - fFirstAPA;
-  int NTicks = fLastTick - fFirstTick + 1;
-  int NWires = fLastWire - fFirstWire + 1 - (1600*NAPABoundaries);
+  fNumberWires = fLastWire - fFirstWire + 1 - (1600*NAPABoundaries);
+  fNumberTicks = fLastTick - fFirstTick + 1;
 
-  std::cout << "Original resolution of image is " << NWires << "x" << NTicks << "." << std::endl;
-  if (NWires > 2400 || NTicks > 2400) Downsample(3);
-  else if (NWires > 600 || NTicks > 600) Downsample(2);
+  std::cout << "Original resolution of image is " << fNumberWires << "x" << fNumberTicks << "." << std::endl;
+  if (fNumberWires > 2400 || fNumberTicks > 2400) Downsample(3);
+  else if (fNumberWires > 600 || fNumberTicks > 600) Downsample(2);
   else Downsample(1);
 
   fTree->Fill();
