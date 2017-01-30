@@ -38,7 +38,6 @@ private:
   void ClearData();
   int GetPlane(int channel);
   void Downsample(int order);
-  // void ProcessWire(recob::Wire w);
 
   TTree* fTree;
   std::string fWireModuleLabel;
@@ -90,17 +89,24 @@ void LArCVMaker::Downsample(int order) {
 
   std::cout << "New resolution is " << fNumberWires << "x" << fNumberTicks << "." << std::endl;
 
+  int apa_count = 0;
   for (int it_x = 0; it_x < fNumberWires; ++it_x) {
     for (int it_y = 0; it_y < fNumberTicks; ++it_y) {
       float pixel = 0;
       for (int x = 0; x < order; ++x) {
         for (int y = 0; y < order; ++y) {
+
           float adc;
-          int wire_address = (order*it_x) + x;
-          int apa = std::floor(wire_address / 2560);
-          wire_address += fFirstWire + (1600*apa);
+
+          int wire_address = fFirstWire + (1600*apa_count) + (order*it_x) + x;
+          if (wire_address%2560 < 1600) {
+            ++apa_count;
+            wire_address += 1600;
+          }
           if (GetPlane(wire_address) != 2) return;
+
           int time_address = fFirstTick + (order*it_y) + y;
+
           if (fWireMap.find(wire_address) != fWireMap.end())
             adc = fWireMap[wire_address][time_address];
           else adc = 0;
@@ -108,27 +114,10 @@ void LArCVMaker::Downsample(int order) {
         }
       }
       pixel /= pow(order,2);
-      // std::cout << "Averaged pixel value is " << pixel << "." << std::endl;
       fImageZ.push_back(pixel);
     }
   }
 } // function LArCVMaker::Downsample
-
-// void LArCVMaker::ProcessWire(recob::Wire w) {
-
-//   if (w.View() != 2 || (int)w.Channel() < fFirstWire || (int)w.Channel() > fLastWire) return;
-//   int channel_apa = std::floor(w.Channel() / 2560.);
-//   int channel_it = w.Channel() - (2560 * channel_apa) - 1600;
-
-//   int n_ticks = fLastTick - fFirstTick + 1;
-
-//   // get adc data
-//   std::vector<float>::const_iterator it_first = w.Signal().begin() + fFirstTick;
-//   std::vector<float>::const_iterator it_last = w.Signal().begin() + fLastTick + 1;
-
-//   PadVector(fImageZ, channel_it-1, n_ticks);
-//   fImageZ.insert(fImageZ.end(),it_first,it_last);
-// } // function LArCVMaker::GetNumberOfWires
 
 void LArCVMaker::beginJob() {
 
@@ -205,46 +194,6 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
   fTree->Fill();
   ClearData();
-
-  // for (int it = fFirstWire; it <= fLastWire; ++it) {
-  //   if (GetPlane(it) != 2) continue;
-  //   ++NWires;
-  // }
-
-  // std::cout << "Number of "
-
-  // std::cout << " done." << std::endl;
-  // std::cout << "Max ADC value in this event is " << max_adc << "." << std::endl;
-  // std::cout << "First tick is " << fFirstTick << ", last tick is " << fLastTick << "." << std::endl;
-  // std::cout << "First wire is " << fFirstWire << ", last wire is " << fLastWire << "." << std::endl;
-  // std::cout << "Setting up APAs...";
-
-  // SetupAPAs();
-
-  // std::cout << " done." << std::endl;
-  // std::cout << "Processing wires..." << std::endl;
-
-  // for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
-  //     it != wireh->end(); ++it) {
-  //   const recob::Wire & wire = *it;
-  //   int current_apa = std::floor(wire.Channel() / 2560.);
-  //   if (it == wireh->begin()) fAPA = current_apa;
-  //   else if (current_apa != fAPA) {
-  //     fAPA = current_apa;
-  //     if (fImageZ.size()/fNumberTicks < 960) PadVector(fImageZ,960,fNumberTicks);
-  //     std::cout << "Size of fImageZ is " << fImageZ.size() << "." << std::endl;
-  //     fTree->Fill();
-  //     ClearData();
-  //   }
-  //   std::cout << "About to call ProcessWire...";
-  //   ProcessWire(wire);
-  //   std::cout << " done." << std::endl;
-  // }
-  // if (fImageZ.size()/fNumberTicks < 960) PadVector(fImageZ,960,fNumberTicks);
-  // fTree->Fill();
-  // ClearData();
-
-  // std::cout << " done." << std::endl;
 } // function LArCVMaker::analyze
 
 DEFINE_ART_MODULE(LArCVMaker)
