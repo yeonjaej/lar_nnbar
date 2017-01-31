@@ -87,7 +87,7 @@ void LArCVMaker::GenerateImages() {
   for (int it_apa = fFirstAPA; it_apa < fLastAPA+1; ++it_apa) {
     int first_wire = (2560*it_apa) + 1600;
     for (int it_x = 0; it_x < fNumberWiresDownsampled; ++it_x) {
-      for (int it_y = 0; it_y = fNumberTicksDownsampled; ++it_y) {
+      for (int it_y = 0; it_y < fNumberTicksDownsampled; ++it_y) {
         float pixel = 0;
         for (int x = 0; x < order; ++x) {
           for (int y = 0; y < order; ++y) {
@@ -95,7 +95,7 @@ void LArCVMaker::GenerateImages() {
             int wire_address = first_wire + (order*it_x) + x;
             int time_address = fFirstTick + (order*it_y) + y;
             if (fWireMap.find(wire_address) != fWireMap.end() && time_address < (int)fWireMap[wire_address].size())
-              adc = fWireMap[wire_address][time];
+              adc = fWireMap[wire_address][time_address];
             pixel += adc;
           }
         }
