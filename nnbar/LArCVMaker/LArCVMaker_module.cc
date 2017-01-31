@@ -73,8 +73,6 @@ void LArCVMaker::ClearData() {
 
 void LArCVMaker::Downsample(int order) {
 
-  auto const * geom = lar::providerFrom<geo::Geometry>();
-
   std::cout << "Function Downsample called with order " << order << "." << std::endl;
 
   fNumberWires = std::ceil(fNumberWires/order);
@@ -96,7 +94,6 @@ void LArCVMaker::Downsample(int order) {
             ++apa_count;
             wire_address += 1600;
           }
-          if ((int)geom->View(wire.Channel()) != 2) return;
 
           int time_address = fFirstTick + (order*it_y) + y;
 
@@ -155,10 +152,17 @@ void LArCVMaker::analyze(art::Event const & evt) {
     const recob::Wire & wire = *it;
     if (wire.View() != 2) continue;
 
-    int apa = std::floor(wire.Channel()/2560)
-    double * wire_start;
-    double * wire_end;
-    geom->WireEndPoints(wire.Channel(),wire_start,wire_end);
+    int apa = std::floor(wire.Channel()/2560);
+    double * wire_start = nullptr;
+    double * wire_end = nullptr;
+    geo::WireID wire_id;
+    std::vector<geo::WireID> geo_wires = geom->ChannelToWire(wire.Channel());
+    if (geo_wires.size() == 1) wire_id = geo_wires[0];
+    else {
+      std::cout << "Error! More than one wire per channel???" << std::endl;
+      exit(1);
+    }
+    geom->WireEndPoints(wire_id,wire_start,wire_end);
     std::cout << "APA " << apa << " - Start [" << wire_start[0] << "," << wire_start[1]
         << "," << wire_start[2] << "] - End [" << wire_end[0] << "," << wire_end[1]
         << "," << wire_end[2] << "]" << std::endl;
