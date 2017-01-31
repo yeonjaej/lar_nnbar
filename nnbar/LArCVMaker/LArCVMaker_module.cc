@@ -36,7 +36,6 @@ public:
 private:
 
   void ClearData();
-  int GetPlane(int channel);
   void Downsample(int order);
 
   TTree* fTree;
@@ -72,15 +71,9 @@ void LArCVMaker::ClearData() {
   fImageZ.clear();
 } // function LArCVMaker::ClearData
 
-int LArCVMaker::GetPlane(int channel) {
-
-  if (channel % 2560 < 800) return 0;
-  else if (channel % 2560 < 1600) return 1;
-  else if (channel % 2560 < 2560) return 2;
-  else return -1;
-} // function LArCVMaker::GetPlane
-
 void LArCVMaker::Downsample(int order) {
+
+  auto const * geom = lar::providerFrom<geo::Geometry>();
 
   std::cout << "Function Downsample called with order " << order << "." << std::endl;
 
@@ -103,7 +96,7 @@ void LArCVMaker::Downsample(int order) {
             ++apa_count;
             wire_address += 1600;
           }
-          if (GetPlane(wire_address) != 2) return;
+          if ((int)geom->View(wire.Channel()) != 2) return;
 
           int time_address = fFirstTick + (order*it_y) + y;
 
@@ -144,11 +137,8 @@ void LArCVMaker::beginJob() {
 
 void LArCVMaker::analyze(art::Event const & evt) {
 
-  float max_adc = -1;
-
   fEvent = evt.event();
-
-  // std::cout << "Beginning analyze function..." << std::endl;
+  auto const * geom = lar::providerFrom<geo::Geometry>();
 
   art::Handle<std::vector<recob::Wire>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
@@ -160,18 +150,23 @@ void LArCVMaker::analyze(art::Event const & evt) {
   fFirstTick = -1;
   fLastTick = -1;
 
-  // std::cout << "Looping over wires to find ROI...";
-
   for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
     const recob::Wire & wire = *it;
     if (wire.View() != 2) continue;
 
+    int apa = std::floor(wire.Channel()/2560)
+    double * wire_start;
+    double * wire_end;
+    geom->WireEndPoints(wire.Channel(),wire_start,wire_end);
+    std::cout << "APA " << apa << " - Start [" << wire_start[0] << "," << wire_start[1]
+        << "," << wire_start[2] << "] - End [" << wire_end[0] << "," << wire_end[1]
+        << "," << wire_end[2] << "]" << std::endl;
+
     fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),std::vector<float>(wire.Signal())));
 
     for (int tick = 0; tick < (int)wire.Signal().size(); ++tick) {
       float adc = wire.Signal()[tick];
-      if (adc > max_adc) max_adc = adc;
       if (adc > fADCCut) {
         if (fFirstWire == -1 || fFirstWire > (int)wire.Channel()) fFirstWire = wire.Channel();
         if (fLastWire == -1 || fLastWire < (int)wire.Channel()) fLastWire = wire.Channel();
