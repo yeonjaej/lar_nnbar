@@ -85,6 +85,7 @@ void LArCVMaker::GenerateImages() {
   }
 
   for (int it_apa = fFirstAPA; it_apa < fLastAPA+1; ++it_apa) {
+    fAPA = it_apa;
     int first_wire = (2560*it_apa) + 1600;
     for (int it_x = 0; it_x < fNumberWiresDownsampled; ++it_x) {
       for (int it_y = 0; it_y < fNumberTicksDownsampled; ++it_y) {
