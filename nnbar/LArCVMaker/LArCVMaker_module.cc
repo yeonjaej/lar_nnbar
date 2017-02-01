@@ -80,8 +80,8 @@ void LArCVMaker::GenerateImages() {
   fNumberTicksDownsampled = std::ceil(fNumberTicksOriginal/order);
 
   if (order > 6) {
-    std::cout << "Downsampling order is " << order << ", something is clearly wrong here. Exiting..." << std::endl;
-    exit(1);
+    std::cout << "Downsampling order is " << order << ", number of ticks in ROI is " << fNumberTicksOriginal << ". Skipping this event..." << std::endl;
+    return;
   }
 
   for (int it_apa = fFirstAPA; it_apa < fLastAPA+1; ++it_apa) {
