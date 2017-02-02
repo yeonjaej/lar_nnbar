@@ -85,6 +85,18 @@ void LArCVMaker::GenerateImage() {
   while (fNumberWiresOriginal/order > 600 || fNumberTicksOriginal/order > 600)
     ++order;
 
+  // int margin = 10 * order;
+  // if (fFirstWire-margin < (fAPA*2560)+1600) fFirstWire = (fAPA*2560)+1600;
+  // else fFirstWire -= margin;
+  // if (fLastWire+margin > ((fAPA+1)*2560)-1) fLastWire = ((fAPA+1)*2560)-1;
+  // else fLastWire += margin;
+  // if (fFirstTick-margin < 0) fFirstTick = 0;
+  // else fFirstTick -= margin;
+  // if (fLastTick+margin > )
+
+  // fNumberWiresOriginal = fLastWire - fFirstWire + 1;
+  // fNumberTicksOriginal = fLastTick - fFirstTick + 1;
+
   fNumberWiresDownsampled = std::ceil(fNumberWiresOriginal/order);
   fNumberTicksDownsampled = std::ceil(fNumberTicksOriginal/order);
 
@@ -94,14 +106,13 @@ void LArCVMaker::GenerateImage() {
     return;
   }
 
-  int first_wire = (2560*fAPA) + 1600;
   for (int it_x = 0; it_x < fNumberWiresDownsampled; ++it_x) {
     for (int it_y = 0; it_y < fNumberTicksDownsampled; ++it_y) {
       float pixel = 0;
       for (int x = 0; x < order; ++x) {
         for (int y = 0; y < order; ++y) {
           float adc = 0;
-          int wire_address = first_wire + (order*it_x) + x;
+          int wire_address = fFirstWire + (order*it_x) + x;
           int time_address = fFirstTick + (order*it_y) + y;
           if (fWireMap.find(wire_address) != fWireMap.end() && time_address < (int)fWireMap[wire_address].size())
             adc = fWireMap[wire_address][time_address];
@@ -158,6 +169,8 @@ void LArCVMaker::analyze(art::Event const & evt) {
     const recob::Wire & wire = *it;
     if (wire.View() != 2) continue;
     fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),std::vector<float>(wire.Signal())));
+
+    std::cout << "Number of ticks is " << wire.Signal().size() << "." << std::endl;
 
     int apa = std::floor(wire.Channel()/2560);
     if (std::find(apas.begin(),apas.end(),apa) == apas.end())
