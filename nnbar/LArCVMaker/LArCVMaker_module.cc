@@ -94,30 +94,27 @@ void LArCVMaker::GenerateImage() {
     return;
   }
 
-  for (int it_apa = fFirstAPA; it_apa < fLastAPA+1; ++it_apa) {
-    fAPA = it_apa;
-    int first_wire = (2560*it_apa) + 1600;
-    for (int it_x = 0; it_x < fNumberWiresDownsampled; ++it_x) {
-      for (int it_y = 0; it_y < fNumberTicksDownsampled; ++it_y) {
-        float pixel = 0;
-        for (int x = 0; x < order; ++x) {
-          for (int y = 0; y < order; ++y) {
-            float adc = 0;
-            int wire_address = first_wire + (order*it_x) + x;
-            int time_address = fFirstTick + (order*it_y) + y;
-            if (fWireMap.find(wire_address) != fWireMap.end() && time_address < (int)fWireMap[wire_address].size())
-              adc = fWireMap[wire_address][time_address];
-            pixel += adc;
-          }
+  int first_wire = (2560*fAPA) + 1600;
+  for (int it_x = 0; it_x < fNumberWiresDownsampled; ++it_x) {
+    for (int it_y = 0; it_y < fNumberTicksDownsampled; ++it_y) {
+      float pixel = 0;
+      for (int x = 0; x < order; ++x) {
+        for (int y = 0; y < order; ++y) {
+          float adc = 0;
+          int wire_address = first_wire + (order*it_x) + x;
+          int time_address = fFirstTick + (order*it_y) + y;
+          if (fWireMap.find(wire_address) != fWireMap.end() && time_address < (int)fWireMap[wire_address].size())
+            adc = fWireMap[wire_address][time_address];
+          pixel += adc;
         }
-        pixel /= pow(order,2);
-        fImageZ.push_back(pixel);
       }
+      pixel /= pow(order,2);
+      fImageZ.push_back(pixel);
     }
-    fTree->Fill();
-    fImageZ.clear();
   }
-} // function LArCVMaker::GenerateImages
+  fTree->Fill();
+  fImageZ.clear();
+} // function LArCVMaker::GenerateImage
 
 void LArCVMaker::beginJob() {
 
@@ -153,8 +150,6 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
   // initialize ROI finding variables
   Reset();
-  int first_wire_in_event = -1;
-  int last_wire_in_event = -1;
   std::vector<int> apas;
 
   // fill wire map
@@ -165,7 +160,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
     fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),std::vector<float>(wire.Signal())));
 
     int apa = std::floor(wire.Channel()/2560);
-    if (std::find(apas.begin(),apas.end(),apa) == apas.end)
+    if (std::find(apas.begin(),apas.end(),apa) == apas.end())
       apas.push_back(apa);
   }
 
@@ -173,11 +168,13 @@ void LArCVMaker::analyze(art::Event const & evt) {
   for (int apa : apas) {
     for (int channel = (2560*apa)+1600; channel < (2560*(apa+1))-1; ++channel) {
       if (fWireMap.find(channel) != fWireMap.end()) {
-        for (int tick : fWireMap[channel]) {
-          if (fFirstWire == -1 || fFirstAPA > apa) fFirstWire = channel;
-          if (fLastWire == -1 || fLastAPA < apa) fLastWire = channel;
-          if (fFirstTick == -1 || fFirstTick > tick) fFirstTick = tick;
-          if (fLastTick == -1 || fLastTick < tick) fLastTick = tick;
+        for (int tick = 0; tick < (int)fWireMap[channel].size(); ++tick) {
+          if (fWireMap[channel][tick] > fADCCut) {
+            if (fFirstWire == -1 || fFirstWire > channel) fFirstWire = channel;
+            if (fLastWire == -1 || fLastWire < channel) fLastWire = channel;
+            if (fFirstTick == -1 || fFirstTick > tick) fFirstTick = tick;
+            if (fLastTick == -1 || fLastTick < tick) fLastTick = tick;
+          }
         }
       }
     }
