@@ -35,14 +35,15 @@ public:
 private:
 
   void ClearData();
-  void GenerateImages();
+  void Reset();
+  void GenerateImage();
 
   TTree* fTree;
   std::string fWireModuleLabel;
   int fADCCut;
 
-  int fFirstAPA;
-  int fLastAPA;
+  int fFirstWire;
+  int fLastWire;
   int fFirstTick;
   int fLastTick;
 
@@ -70,17 +71,26 @@ void LArCVMaker::ClearData() {
   fImageZ.clear();
 } // function LArCVMaker::ClearData
 
-void LArCVMaker::GenerateImages() {
+void LArCVMaker::Reset() {
+
+  fFirstWire = -1;
+  fLastWire = -1;
+  fFirstTick = -1;
+  fLastTick = -1;
+} // function LArCVMaker::Reset
+
+void LArCVMaker::GenerateImage() {
 
   int order = 1;
   while (fNumberWiresOriginal/order > 600 || fNumberTicksOriginal/order > 600)
     ++order;
 
-  fNumberWiresDownsampled = fNumberWiresOriginal/order;
+  fNumberWiresDownsampled = std::ceil(fNumberWiresOriginal/order);
   fNumberTicksDownsampled = std::ceil(fNumberTicksOriginal/order);
 
   if (order > 6) {
-    std::cout << "Downsampling order is " << order << ", number of ticks in ROI is " << fNumberTicksOriginal << ". Skipping this event..." << std::endl;
+    std::cout << "Downsampling order is " << order << ", original resolution is "
+        << fNumberWiresOriginal << "x" << fNumberTicksOriginal << ". Skipping this event..." << std::endl;
     return;
   }
 
@@ -116,8 +126,8 @@ void LArCVMaker::beginJob() {
     art::ServiceHandle<art::TFileService> tfs;
     fTree = tfs->make<TTree>("LArCV","LArCV tree");
 
-    fTree->Branch("FirstAPA",&fFirstAPA,"FirstAPA/I");
-    fTree->Branch("LastAPA",&fLastAPA,"LastAPA/I");
+    fTree->Branch("FirstWire",&fFirstWire,"FirstWire/I");
+    fTree->Branch("LastWire",&fLastWire,"LastWire/I");
     fTree->Branch("FirstTick",&fFirstTick,"FirstTick/I");
     fTree->Branch("LastTick",&fFirstTick,"LastTick/I");
 
@@ -134,39 +144,55 @@ void LArCVMaker::beginJob() {
 
 void LArCVMaker::analyze(art::Event const & evt) {
 
+  // get event number
   fEvent = evt.event();
 
+  // get wire objects
   art::Handle<std::vector<recob::Wire>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
 
-  fFirstAPA = -1;
-  fLastAPA = -1;
-  fFirstTick = -1;
-  fLastTick = -1;
+  // initialize ROI finding variables
+  Reset();
+  int first_wire_in_event = -1;
+  int last_wire_in_event = -1;
+  std::vector<int> apas;
 
+  // fill wire map
   for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
     const recob::Wire & wire = *it;
     if (wire.View() != 2) continue;
-
     fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),std::vector<float>(wire.Signal())));
 
-    for (int tick = 0; tick < (int)wire.Signal().size(); ++tick) {
-      float adc = wire.Signal()[tick];
-      int apa = std::floor(wire.Channel()/2560);
-      if (adc > fADCCut) {
-        if (fFirstAPA == -1 || fFirstAPA > apa) fFirstAPA = apa;
-        if (fLastAPA == -1 || fLastAPA < apa) fLastAPA = apa;
-        if (fFirstTick == -1 || fFirstTick > tick) fFirstTick = tick;
-        if (fLastTick == -1 || fLastTick < tick) fLastTick = tick;
-      }
-    }
+    int apa = std::floor(wire.Channel()/2560);
+    if (std::find(apas.begin(),apas.end(),apa) == apas.end)
+      apas.push_back(apa);
   }
 
-  fNumberWiresOriginal = 960;
-  fNumberTicksOriginal = fLastTick - fFirstTick + 1;
+  // identify ROI in each APA
+  for (int apa : apas) {
+    for (int channel = (2560*apa)+1600; channel < (2560*(apa+1))-1; ++channel) {
+      if (fWireMap.find(channel) != fWireMap.end()) {
+        for (int tick : fWireMap[channel]) {
+          if (fFirstWire == -1 || fFirstAPA > apa) fFirstWire = channel;
+          if (fLastWire == -1 || fLastAPA < apa) fLastWire = channel;
+          if (fFirstTick == -1 || fFirstTick > tick) fFirstTick = tick;
+          if (fLastTick == -1 || fLastTick < tick) fLastTick = tick;
+        }
+      }
+    }
 
-  GenerateImages();
+    // generate image
+    if (fFirstWire != -1) {
+      fAPA = apa;
+      fNumberWiresOriginal = fLastWire - fFirstWire + 1;
+      fNumberTicksOriginal = fLastTick - fFirstTick + 1;
+      GenerateImage();
+    }
+    else std::cout << "Couldn't find any wires in this APA above the threshold." << std::endl;
+    Reset();
+  }
+
   ClearData();
 } // function LArCVMaker::analyze
 
