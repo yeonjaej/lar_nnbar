@@ -85,17 +85,18 @@ void LArCVMaker::GenerateImage() {
   while (fNumberWiresOriginal/order > 600 || fNumberTicksOriginal/order > 600)
     ++order;
 
-  // int margin = 10 * order;
-  // if (fFirstWire-margin < (fAPA*2560)+1600) fFirstWire = (fAPA*2560)+1600;
-  // else fFirstWire -= margin;
-  // if (fLastWire+margin > ((fAPA+1)*2560)-1) fLastWire = ((fAPA+1)*2560)-1;
-  // else fLastWire += margin;
-  // if (fFirstTick-margin < 0) fFirstTick = 0;
-  // else fFirstTick -= margin;
-  // if (fLastTick+margin > )
+  int margin = 10 * order;
+  if (fFirstWire-margin < (fAPA*2560)+1600) fFirstWire = (fAPA*2560)+1600;
+  else fFirstWire -= margin;
+  if (fLastWire+margin > ((fAPA+1)*2560)-1) fLastWire = ((fAPA+1)*2560)-1;
+  else fLastWire += margin;
+  if (fFirstTick-margin < 0) fFirstTick = 0;
+  else fFirstTick -= margin;
+  if (fLastTick+margin > 4492) fLastTick = 4492;
+  else fLastTick += margin;
 
-  // fNumberWiresOriginal = fLastWire - fFirstWire + 1;
-  // fNumberTicksOriginal = fLastTick - fFirstTick + 1;
+  fNumberWiresOriginal = fLastWire - fFirstWire + 1;
+  fNumberTicksOriginal = fLastTick - fFirstTick + 1;
 
   fNumberWiresDownsampled = std::ceil(fNumberWiresOriginal/order);
   fNumberTicksDownsampled = std::ceil(fNumberTicksOriginal/order);
