@@ -22,6 +22,9 @@
 #include <cmath>
 #include <map>
 
+// external includes
+#include "pngwriter.h"
+
 namespace nnbar {
 
 class LArCVMaker : public art::EDAnalyzer {
@@ -29,16 +32,16 @@ class LArCVMaker : public art::EDAnalyzer {
 public:
 
   explicit LArCVMaker(fhicl::ParameterSet const & pset);
-  void beginJob();
   void analyze(art::Event const & evt);
 
 private:
 
   void ClearData();
   void Reset();
+  void FindROI(int apa);
+  int FindBestAPA(std::vector<int> apas);
   void GenerateImage();
 
-  TTree* fTree;
   std::string fWireModuleLabel;
   int fADCCut;
 
@@ -49,18 +52,14 @@ private:
 
   int fEvent;
   int fAPA;
-  int fNumberWiresOriginal;
-  int fNumberTicksOriginal;
-  int fNumberWiresDownsampled;
-  int fNumberTicksDownsampled;
+  int fNumberWires;
+  int fNumberTicks;
 
   std::map<int,std::vector<float>> fWireMap;
-  std::vector<float> fImageZ;
 }; // class LArCVMaker
 
 LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
     EDAnalyzer(pset),
-    fTree(nullptr),
     fWireModuleLabel(pset.get<std::string>("WireModuleLabel")),
     fADCCut(pset.get<int>("ADCCut"))
 {} // function LArCVMaker::LArCVMaker
@@ -68,7 +67,6 @@ LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
 void LArCVMaker::ClearData() {
 
   fWireMap.clear();
-  fImageZ.clear();
 } // function LArCVMaker::ClearData
 
 void LArCVMaker::Reset() {
@@ -79,10 +77,26 @@ void LArCVMaker::Reset() {
   fLastTick = -1;
 } // function LArCVMaker::Reset
 
-void LArCVMaker::GenerateImage() {
+void LArCVMaker::FindROI(int apa) {
+
+  for (int channel = (2560*apa)+1600; channel < (2560*(apa+1))-1; ++channel) {
+    if (fWireMap.find(channel) != fWireMap.end()) {
+      for (int tick = 0; tick < (int)fWireMap[channel].size(); ++tick) {
+        if (fWireMap[channel][tick] > fADCCut) {
+          if (fFirstWire == -1 || fFirstWire > channel) fFirstWire = channel;
+          if (fLastWire == -1 || fLastWire < channel) fLastWire = channel;
+          if (fFirstTick == -1 || fFirstTick > tick) fFirstTick = tick;
+          if (fLastTick == -1 || fLastTick < tick) fLastTick = tick;
+        }
+      }
+    }
+  }
+
+  fNumberWires = fLastWire - fFirstWire + 1;
+  fNumberTicks = fLastTick - fFirstTick + 1;
 
   int order = 1;
-  while (fNumberWiresOriginal/order > 600 || fNumberTicksOriginal/order > 600)
+  while (fNumberWires/order > 600 || fNumberTicks/order > 600)
     ++order;
 
   int margin = 10 * order;
@@ -95,61 +109,108 @@ void LArCVMaker::GenerateImage() {
   if (fLastTick+margin > 4492) fLastTick = 4492;
   else fLastTick += margin;
 
-  fNumberWiresOriginal = fLastWire - fFirstWire + 1;
-  fNumberTicksOriginal = fLastTick - fFirstTick + 1;
+  fNumberWires = fLastWire - fFirstWire + 1;
+  fNumberTicks = fLastTick - fFirstTick + 1;
 
-  fNumberWiresDownsampled = std::ceil(fNumberWiresOriginal/order);
-  fNumberTicksDownsampled = std::ceil(fNumberTicksOriginal/order);
+} // function LArCVMaker::FindROI
 
-  if (order > 6) {
-    std::cout << "Downsampling order is " << order << ", original resolution is "
-        << fNumberWiresOriginal << "x" << fNumberTicksOriginal << ". Skipping this event..." << std::endl;
-    return;
-  }
+int LArCVMaker::FindBestAPA(std::vector<int> apas) {
 
-  for (int it_x = 0; it_x < fNumberWiresDownsampled; ++it_x) {
-    for (int it_y = 0; it_y < fNumberTicksDownsampled; ++it_y) {
-      float pixel = 0;
-      for (int x = 0; x < order; ++x) {
-        for (int y = 0; y < order; ++y) {
-          float adc = 0;
-          int wire_address = fFirstWire + (order*it_x) + x;
-          int time_address = fFirstTick + (order*it_y) + y;
-          if (fWireMap.find(wire_address) != fWireMap.end() && time_address < (int)fWireMap[wire_address].size())
-            adc = fWireMap[wire_address][time_address];
-          pixel += adc;
-        }
+  int best_apa = -1;
+  float best_adc = -1;
+
+  for (int apa : apas) {
+
+    float max_adc = 0;
+
+    FindROI(apa);
+
+    for (int it_x = 0; it_x < fNumberWires; ++it_x) {
+      for (int it_y = 0; it_y < fNumberTicks; ++it_y) {
+        int wire_address = fFirstWire + it_x;
+        int tick_address = fFirstTick + it_y;
+        if (fWireMap.find(wire_address) != fWireMap.end() && tick_address < (int)fWireMap[wire_address].size())
+          max_adc += fWireMap[wire_address][tick_address];
       }
-      pixel /= pow(order,2);
-      fImageZ.push_back(pixel);
+    }
+
+    if (max_adc > best_adc || best_apa == -1) {
+      best_apa = apa;
+      best_adc = max_adc;
     }
   }
-  fTree->Fill();
-  fImageZ.clear();
-} // function LArCVMaker::GenerateImage
 
-void LArCVMaker::beginJob() {
+  return best_apa;
+} // function LArCVMaker::FindBestAPA
 
-  if (!fTree) {
+void LArCVMaker::GenerateImage() {
 
-    art::ServiceHandle<art::TFileService> tfs;
-    fTree = tfs->make<TTree>("LArCV","LArCV tree");
+  FindROI(fAPA);
 
-    fTree->Branch("FirstWire",&fFirstWire,"FirstWire/I");
-    fTree->Branch("LastWire",&fLastWire,"LastWire/I");
-    fTree->Branch("FirstTick",&fFirstTick,"FirstTick/I");
-    fTree->Branch("LastTick",&fFirstTick,"LastTick/I");
+  if (fNumberWires < 100 || fNumberTicks < 100) return;
 
-    fTree->Branch("Event",&fEvent,"Event/I");
-    fTree->Branch("APA",&fAPA,"APA/I");
-    fTree->Branch("NumberWiresOriginal",&fNumberWiresOriginal,"NumberWiresOriginal/I");
-    fTree->Branch("NumberTicksOriginal",&fNumberTicksOriginal,"NumberTicksOriginal/I");
-    fTree->Branch("NumberWiresDownsampled",&fNumberWiresDownsampled,"NumberWiresDownsampled/I");
-    fTree->Branch("NumberTicksDownsampled",&fNumberTicksDownsampled,"NumberTicksDownsampled/I");
+  float min = 0;
+  float max = 0;
 
-    fTree->Branch("ImageZ","std::vector<float>",&fImageZ);
+  for (int it_x = 0; it_x < fNumberWires; ++it_x) {
+    std::vector<float> wire;
+    for (int it_y = 0; it_y < fNumberTicks; ++it_y) {
+      float adc = 0;
+      int wire_address = fFirstWire + it_x;
+      int tick_address = fFirstTick + it_y;
+      if (fWireMap.find(wire_address) != fWireMap.end() && tick_address < (int)fWireMap[wire_address].size())
+        adc = fWireMap[wire_address][tick_address];
+      if (it_x == 0 && it_y == 0) {
+        min = adc;
+        max = adc;
+      }
+      else if (adc < min) min = adc;
+      else if (adc > max) max = adc;
+    }
   }
-} // function LArCVMaker::beginJob
+
+  float base_colour;
+  if (min < 0) base_colour = 1 + (min / (max-min));
+  else base_colour = 1;
+
+  std::vector<std::vector<float>> image;
+  for (int it_x = 0; it_x < fNumberWires; ++it_x) {
+    std::vector<float> wire;
+    for (int it_y = 0; it_y < fNumberTicks; ++it_y) {
+      float adc = base_colour;
+      int wire_address = fFirstWire + it_x;
+      int tick_address = fFirstTick + it_y;
+      if (fWireMap.find(wire_address) != fWireMap.end() && tick_address < (int)fWireMap[wire_address].size())
+        adc = 1 - ((fWireMap[wire_address][tick_address]-min)/(max-min));
+      wire.push_back(adc);
+    }
+    image.push_back(wire);
+  }
+/*
+  std::string filename;
+  char const * outdir = std::getenv("CONDOR_DIR_IMAGE");
+  if (outdir == NULL) {
+    std::cout << "Error! CONDOR_DIR_IMAGE is not set! Exiting..." << std::endl;
+    exit(1);
+  }
+  else filename = std::string(outdir)+"/ImageZ_"+std::to_string(fEvent)+"_"+std::to_string(fAPA)+".png";
+*/
+  std::string filename = "./ImageZ_"+std::to_string(fEvent)+"_"+std::to_string(fAPA)+".png";
+  pngwriter image_maker(fNumberWires, fNumberTicks, base_colour, filename.c_str());
+
+  for (int it_x = 0; it_x < fNumberWires; ++it_x)
+    for (int it_y = 0; it_y < fNumberTicks; ++it_y)
+      image_maker.plotHSV(it_x+1, it_y+1, 0., 0., image[it_x][it_y]);
+
+  image_maker.scale_kxky(4,1);
+  double image_size;
+  if (fNumberWires > fNumberTicks) image_size = fNumberWires;
+  else image_size = fNumberTicks;
+  double scale_factor = 600. / image_size;
+  image_maker.scale_k(scale_factor);
+
+  image_maker.write_png();
+} // function LArCVMaker::GenerateImage
 
 void LArCVMaker::analyze(art::Event const & evt) {
 
@@ -170,41 +231,17 @@ void LArCVMaker::analyze(art::Event const & evt) {
     const recob::Wire & wire = *it;
     if (wire.View() != 2) continue;
     fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),std::vector<float>(wire.Signal())));
-
-    std::cout << "Number of ticks is " << wire.Signal().size() << "." << std::endl;
-
     int apa = std::floor(wire.Channel()/2560);
     if (std::find(apas.begin(),apas.end(),apa) == apas.end())
       apas.push_back(apa);
   }
 
-  // identify ROI in each APA
-  for (int apa : apas) {
-    for (int channel = (2560*apa)+1600; channel < (2560*(apa+1))-1; ++channel) {
-      if (fWireMap.find(channel) != fWireMap.end()) {
-        for (int tick = 0; tick < (int)fWireMap[channel].size(); ++tick) {
-          if (fWireMap[channel][tick] > fADCCut) {
-            if (fFirstWire == -1 || fFirstWire > channel) fFirstWire = channel;
-            if (fLastWire == -1 || fLastWire < channel) fLastWire = channel;
-            if (fFirstTick == -1 || fFirstTick > tick) fFirstTick = tick;
-            if (fLastTick == -1 || fLastTick < tick) fLastTick = tick;
-          }
-        }
-      }
-    }
-
-    // generate image
-    if (fFirstWire != -1) {
-      fAPA = apa;
-      fNumberWiresOriginal = fLastWire - fFirstWire + 1;
-      fNumberTicksOriginal = fLastTick - fFirstTick + 1;
-      GenerateImage();
-    }
-    else std::cout << "Couldn't find any wires in this APA above the threshold." << std::endl;
-    Reset();
-  }
-
+  // find best APA and generate image
+  int best_apa = FindBestAPA(apas);
+  if (best_apa != -1) fAPA = best_apa;
+  GenerateImage();
   ClearData();
+
 } // function LArCVMaker::analyze
 
 DEFINE_ART_MODULE(LArCVMaker)

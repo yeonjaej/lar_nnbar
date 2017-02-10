@@ -5,7 +5,6 @@ process_name: larcvmaker
 
 services:
 {
-  TFileService: { fileName: "LArCV.root" }
   TimeTracker:            {}
   MemoryTracker:          {}
   RandomNumberGenerator:  {}

@@ -1,4 +1,12 @@
-art_make( MODULE_LIBRARIES larcore_Geometry
+include_directories(/usr/include/freetype2)
+
+art_make_library( LIBRARY_NAME pngwriter
+		  SOURCE pngwriter.cc pngwriter.h
+		  LIBRARIES freetype png12
+		)
+
+art_make( LIB_LIBRARIES freetype png12
+	  MODULE_LIBRARIES larcore_Geometry
 	  larcore_Geometry_Geometry_service
 	  larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
 	  larsim_MCCheater_BackTracker_service
@@ -30,6 +38,7 @@ art_make( MODULE_LIBRARIES larcore_Geometry
 	  ${ROOT_XMLIO}
 	  ${ROOT_GDML}
 	  ${ROOT_BASIC_LIB_LIST}
+	  pngwriter
         )
 
 install_headers()
