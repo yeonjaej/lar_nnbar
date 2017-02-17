@@ -1,12 +1,9 @@
-include_directories(/usr/include/freetype2)
+include_directories( $ENV{LARCV_INCDIR} )
+set( BOOST_LIB -L$ENV{BOOST_LIB} -lboost_system )
+set( LARCV_LIB -L$ENV{LARCV_LIBDIR} -llarcv )
+file(COPY $ENV{LARCV_LIBDIR}/liblarcv.so DESTINATION ${LIBRARY_OUTPUT_PATH})
 
-art_make_library( LIBRARY_NAME pngwriter
-		  SOURCE pngwriter.cc pngwriter.h
-		  LIBRARIES freetype png12
-		)
-
-art_make( LIB_LIBRARIES freetype png12
-	  MODULE_LIBRARIES larcore_Geometry
+art_make( MODULE_LIBRARIES larcore_Geometry
 	  larcore_Geometry_Geometry_service
 	  larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
 	  larsim_MCCheater_BackTracker_service
@@ -38,7 +35,8 @@ art_make( LIB_LIBRARIES freetype png12
 	  ${ROOT_XMLIO}
 	  ${ROOT_GDML}
 	  ${ROOT_BASIC_LIB_LIST}
-	  pngwriter
+	  ${LARCV_LIB}
+	  ${BOOST_LIB}
         )
 
 install_headers()
