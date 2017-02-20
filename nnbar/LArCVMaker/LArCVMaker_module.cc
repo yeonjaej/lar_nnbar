@@ -270,6 +270,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
     }
     image.compress(fNumberWires/downsample,fNumberTicks/(4*downsample));
     std::cout << " => downsampling to " << fNumberWires/downsample << "x" << fNumberTicks/(4*downsample) << "." << std::endl << std::endl;
+    image.resize(600,600,0);
     images->Emplace(std::move(image));
   }
 
