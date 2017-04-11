@@ -24,6 +24,7 @@
 
 // local includes
 #include "DataFormat/EventImage2D.h"
+#include "DataFormat/EventROI.h"
 #include "DataFormat/IOManager.h"
 
 namespace nnbar {
@@ -40,6 +41,8 @@ public:
 private:
 
   void ClearData();
+  void ResetROI();
+  void SetROISize();
   int FindBestAPA(std::vector<int> apas);
   int FindROI(int apa, int plane);
 
@@ -48,6 +51,7 @@ private:
   std::string fWireModuleLabel;
   int fMaxTick;
   int fADCCut;
+  int fEventType;
 
   int fFirstWire;
   int fLastWire;
@@ -72,12 +76,16 @@ LArCVMaker::LArCVMaker(fhicl::ParameterSet const & pset) :
     fMgr(larcv::IOManager::kWRITE),
     fWireModuleLabel(pset.get<std::string>("WireModuleLabel")),
     fMaxTick(pset.get<int>("MaxTick")),
-    fADCCut(pset.get<int>("ADCCut"))
+    fADCCut(pset.get<int>("ADCCut")),
+    fEventType(pset.get<int>("EventType"))
 {} // function LArCVMaker::LArCVMaker
 
 void LArCVMaker::beginJob() {
 
-  fMgr.set_out_file("larcv.root");
+  std::string filename;
+  if (std::getenv("PROCESS") != nullptr) filename = "larcv_" + std::string(std::getenv("PROCESS")) + ".root";
+  else filename = "larcv.root";
+  fMgr.set_out_file(filename);
   fMgr.initialize();
 } // function LArCVMaker::beginJob
 
@@ -88,8 +96,26 @@ void LArCVMaker::endJob() {
 
 void LArCVMaker::ClearData() {
 
+  ResetROI();
+  fAPA = -1;
   fWireMap.clear();
 } // function LArCVMaker::ClearData
+
+void LArCVMaker::ResetROI() {
+
+  fFirstWire = -1;
+  fLastWire = -1;
+  fFirstTick = -1;
+  fLastTick = -1;
+  fNumberWires = -1;
+  fNumberTicks = -1;
+} // function LArCVMaker::ResetROI
+
+void LArCVMaker::SetROISize() {
+
+  fNumberWires = fLastWire - fFirstWire + 1;
+  fNumberTicks = fLastTick - fFirstTick + 1;
+}
 
 int LArCVMaker::FindBestAPA(std::vector<int> apas) {
 
@@ -122,6 +148,8 @@ int LArCVMaker::FindBestAPA(std::vector<int> apas) {
 
 int LArCVMaker::FindROI(int apa, int plane) {
 
+  ResetROI();
+
   // find first & last channels in APA
   int first_channel = (2560*apa) + fFirstChannel[plane];
   int last_channel = (2560*apa) + fLastChannel[plane];
@@ -140,9 +168,8 @@ int LArCVMaker::FindROI(int apa, int plane) {
     }
   }
 
-  // count number of wires
-  fNumberWires = fLastWire - fFirstWire + 1;
-  fNumberTicks = fLastTick - fFirstTick + 1;
+  if (fFirstWire == -1 || fLastWire == -1 || fFirstTick == -1 || fLastTick == -1) return -1;
+  SetROISize();
 
   // figure out whether we need to downsample
   int downsample = 1;
@@ -156,7 +183,7 @@ int LArCVMaker::FindROI(int apa, int plane) {
   else fFirstWire -= margin;
   if (fLastWire+margin > last_channel) fLastWire = last_channel;
   else fLastWire += margin;
-  fNumberWires = fLastWire - fFirstWire + 1;
+  SetROISize();
 
   // make sure number of wires is even
   if (fNumberWires%downsample == 1 && fLastWire < last_channel) {
@@ -172,7 +199,7 @@ int LArCVMaker::FindROI(int apa, int plane) {
     std::cout << "There are " << fNumberWires << " wires. Exiting." << std::endl;
     exit(1);
   }
-  fNumberWires = fLastWire - fFirstWire + 1;
+  SetROISize();
 
   // make sure number of ticks is good
   int first_tick = 2;
@@ -192,25 +219,23 @@ int LArCVMaker::FindROI(int apa, int plane) {
   }
   else {
     // deal with start of ROI
-    if (fFirstTick-(margin+ticks_to_add) < first_tick) {
-      fFirstTick = first_tick;
-      fNumberTicks = fLastTick - fFirstTick + 1;
-    }
-    else {
-      fFirstTick -= margin + ticks_to_add;
-      fNumberTicks = fLastTick - fFirstTick + 1;
-    }
+    if (fFirstTick-(margin+ticks_to_add) < first_tick) fFirstTick = first_tick;
+    else fFirstTick -= margin + ticks_to_add;
+    SetROISize();
 
     // now deal with end of ROI
     if (fNumberTicks%order != 0) ticks_to_add = order - (fNumberTicks%order);
     else ticks_to_add = 0;
-    if (fLastTick+margin+ticks_to_add > last_tick) {
-      fLastTick = last_tick;
-      fNumberTicks = fLastTick - fFirstTick + 1;
-    }
-    else {
-      fLastTick += margin + ticks_to_add;
-      fNumberTicks = fLastTick - fFirstTick + 1;
+    if (fLastTick+margin+ticks_to_add > last_tick) fLastTick = last_tick;
+    else fLastTick += margin + ticks_to_add;
+    SetROISize();
+
+    // now mop up any residual
+    if (fNumberTicks%order != 0) {
+      ticks_to_add = order-(fNumberTicks%order);
+      if (fFirstTick - ticks_to_add < first_tick) fFirstTick = first_tick;
+      else fFirstTick -= ticks_to_add;
+      SetROISize();
     }
 
     if (fNumberTicks%order != 0) {
@@ -219,13 +244,13 @@ int LArCVMaker::FindROI(int apa, int plane) {
     }
   }
 
-  fNumberWires = fLastWire - fFirstWire + 1;
-  fNumberTicks = fLastTick - fFirstTick + 1;
-
+  SetROISize();
   return downsample;
 } // function LArCVMaker::FindROI
 
 void LArCVMaker::analyze(art::Event const & evt) {
+
+  ClearData();
 
   // get event number
   fEvent = evt.event();
@@ -250,8 +275,24 @@ void LArCVMaker::analyze(art::Event const & evt) {
   }
 
   // find best APA
+  if (apas.size() == 0) {
+    std::cout << "Skipping event. No activity inside the TPC!" << std::endl;
+    return;
+  }
   int best_apa = FindBestAPA(apas);
   if (best_apa != -1) fAPA = best_apa;
+  else {
+    std::cout << "Skipping event. Could not find good APA!" << std::endl;
+    return;
+  }
+
+  // check for problems
+  for (int it_plane = 0; it_plane < 3; ++it_plane) {
+    if (FindROI(best_apa,it_plane) == -1) {
+      std::cout << "Skipping event. Could not find good ROI in APA!" << std::endl;
+      return;
+    }
+  }
 
   // produce image
   auto images = (larcv::EventImage2D*)(fMgr.get_data(larcv::kProductImage2D, "tpc"));
@@ -273,6 +314,9 @@ void LArCVMaker::analyze(art::Event const & evt) {
     image.resize(600,600,0);
     images->Emplace(std::move(image));
   }
+
+  auto roi = (larcv::EventROI*)(fMgr.get_data(larcv::kProductROI, "tpc"));
+  roi->Emplace(larcv::ROI((larcv::ROIType_t)fEventType));
 
   fMgr.save_entry();
 } // function LArCVMaker::analyze
