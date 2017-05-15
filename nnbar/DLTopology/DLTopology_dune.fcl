@@ -1,0 +1,9 @@
+BEGIN_PROLOG
+
+dune_DLTopology:
+{ 
+ module_type:             "nnbar/DLTopology/DLTopology"
+ IsSignal:                false
+}
+
+END_PROLOG
