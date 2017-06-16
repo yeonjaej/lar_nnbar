@@ -53,21 +53,17 @@ private:
   int fADCCut;
   int fEventType;
 
-  int fFirstWire;
-  int fLastWire;
-  int fFirstTick;
-  int fLastTick;
-
-  const int fNumberChannels[3] = { 800, 800, 960 };
-  const int fFirstChannel[3] = { 0, 800, 1600 };
-  const int fLastChannel[3] = { 799, 1599, 2559 };
+  const int fNumberChannels[3] = { 2400, 2400, 3456 };
+  const int fFirstChannel[3] = { 0, 2400, 5856 };
+  const int fLastChannel[3] = { 2399, 5855, 8255 };
 
   int fEvent;
   int fAPA;
   int fNumberWires;
   int fNumberTicks;
 
-  std::map<int,std::vector<float>> fWireMap;
+  std::map<int,std::vector<float> > fWireMap;
+  std::vector<std::vector<float> > fImage;
 
 }; // class LArCVMaker
 
@@ -96,157 +92,8 @@ void LArCVMaker::endJob() {
 
 void LArCVMaker::ClearData() {
 
-  ResetROI();
-  fAPA = -1;
   fWireMap.clear();
 } // function LArCVMaker::ClearData
-
-void LArCVMaker::ResetROI() {
-
-  fFirstWire = -1;
-  fLastWire = -1;
-  fFirstTick = -1;
-  fLastTick = -1;
-  fNumberWires = -1;
-  fNumberTicks = -1;
-} // function LArCVMaker::ResetROI
-
-void LArCVMaker::SetROISize() {
-
-  fNumberWires = fLastWire - fFirstWire + 1;
-  fNumberTicks = fLastTick - fFirstTick + 1;
-}
-
-int LArCVMaker::FindBestAPA(std::vector<int> apas) {
-
-  int best_apa = -1;
-  float best_adc = -1;
-
-  for (int apa : apas) {
-
-    float max_adc = 0;
-
-    for (int it_plane = 0; it_plane < 3; ++it_plane) {
-      for (int it_x = 0; it_x < fNumberChannels[it_plane]; ++it_x) {
-        for (int it_y = 0; it_y < fMaxTick; ++it_y) {
-          int wire_address = (apa * 2560) + fFirstChannel[it_plane] + it_x;
-          int tick_address = it_y;
-          if (fWireMap.find(wire_address) != fWireMap.end() && tick_address < (int)fWireMap[wire_address].size())
-            max_adc += fWireMap[wire_address][tick_address];
-        }
-      }
-    }
-
-    if (max_adc > best_adc || best_apa == -1) {
-      best_apa = apa;
-      best_adc = max_adc;
-    }
-  }
-
-  return best_apa;
-} // function LArCVMaker::FindBestAPA
-
-int LArCVMaker::FindROI(int apa, int plane) {
-
-  ResetROI();
-
-  // find first & last channels in APA
-  int first_channel = (2560*apa) + fFirstChannel[plane];
-  int last_channel = (2560*apa) + fLastChannel[plane];
-
-  // find first & last channel & tick with ADC above threshold
-  for (int channel = first_channel; channel < last_channel; ++channel) {
-    if (fWireMap.find(channel) != fWireMap.end()) {
-      for (int tick = 0; tick < (int)fWireMap[channel].size(); ++tick) {
-        if (fWireMap[channel][tick] > fADCCut) {
-          if (fFirstWire == -1 || fFirstWire > channel) fFirstWire = channel;
-          if (fLastWire == -1 || fLastWire < channel) fLastWire = channel;
-          if (fFirstTick == -1 || fFirstTick > tick) fFirstTick = tick;
-          if (fLastTick == -1 || fLastTick < tick) fLastTick = tick;
-        }
-      }
-    }
-  }
-
-  if (fFirstWire == -1 || fLastWire == -1 || fFirstTick == -1 || fLastTick == -1) return -1;
-  SetROISize();
-
-  // figure out whether we need to downsample
-  int downsample = 1;
-  if (fNumberWires > 600 || fNumberTicks/4 > 600) downsample = 2;
-
-  // calculate exact required image size
-
-  // add margin in wire dimension
-  int margin = 10 * downsample;
-  if (fFirstWire-margin < first_channel) fFirstWire = first_channel;
-  else fFirstWire -= margin;
-  if (fLastWire+margin > last_channel) fLastWire = last_channel;
-  else fLastWire += margin;
-  SetROISize();
-
-  // make sure number of wires is even
-  if (fNumberWires%downsample == 1 && fLastWire < last_channel) {
-    ++fLastWire;
-    ++fNumberWires;
-  }
-  else if (fNumberWires%downsample == 1 && fFirstWire > first_channel) {
-    --fFirstWire;
-    ++fNumberWires;
-  }
-  else if (fNumberWires%downsample == 1) {
-    std::cout << "VERY WEIRD. Odd number of wires but somehow out of bounds???" << std::endl;
-    std::cout << "There are " << fNumberWires << " wires. Exiting." << std::endl;
-    exit(1);
-  }
-  SetROISize();
-
-  // make sure number of ticks is good
-  int first_tick = 2;
-  int last_tick = 4489;
-  if (downsample == 1) {
-    first_tick = 0;
-    last_tick = 4491;
-  }
-  int num_ticks = last_tick - first_tick;
-  int ticks_to_add = 0;
-  int order = 4 * downsample;
-  margin = 40 * downsample;
-  if (fNumberTicks%order != 0) ticks_to_add = order-(fNumberTicks%order);
-  if (fNumberTicks+(2*margin)+ticks_to_add > num_ticks) {
-    fFirstTick = first_tick;
-    fLastTick = last_tick;
-  }
-  else {
-    // deal with start of ROI
-    if (fFirstTick-(margin+ticks_to_add) < first_tick) fFirstTick = first_tick;
-    else fFirstTick -= margin + ticks_to_add;
-    SetROISize();
-
-    // now deal with end of ROI
-    if (fNumberTicks%order != 0) ticks_to_add = order - (fNumberTicks%order);
-    else ticks_to_add = 0;
-    if (fLastTick+margin+ticks_to_add > last_tick) fLastTick = last_tick;
-    else fLastTick += margin + ticks_to_add;
-    SetROISize();
-
-    // now mop up any residual
-    if (fNumberTicks%order != 0) {
-      ticks_to_add = order-(fNumberTicks%order);
-      if (fFirstTick - ticks_to_add < first_tick) fFirstTick = first_tick;
-      else fFirstTick -= ticks_to_add;
-      SetROISize();
-    }
-
-    if (fNumberTicks%order != 0) {
-      std::cout << "Number of ticks " << fNumberTicks << " is still not divisible by order " << order << ". I have no idea what's happening." << std::endl;
-      exit(1);
-    }
-  }
-
-  SetROISize();
-  return downsample;
-} // function LArCVMaker::FindROI
 
 void LArCVMaker::analyze(art::Event const & evt) {
 
@@ -261,57 +108,32 @@ void LArCVMaker::analyze(art::Event const & evt) {
   art::Handle<std::vector<recob::Wire>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
 
-  // initialize ROI finding variables
-  std::vector<int> apas;
-
-  // fill wire map
-  for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
-      it != wireh->end(); ++it) {
+  // loop over each wire and add it to the wire map
+  for (std::vector<recob::Wire>::const_iterator it = wireh->begin(); it != wireh->end(); ++it) {
     const recob::Wire & wire = *it;
-    fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),std::vector<float>(wire.Signal())));
-    int apa = std::floor(wire.Channel()/2560);
-    if (std::find(apas.begin(),apas.end(),apa) == apas.end())
-      apas.push_back(apa);
+    fWireMap.insert(std::pair<int,std::vector<float> >(wire.Channel(),std::vector<float>(wire.Signal())));
   }
 
-  // find best APA
-  if (apas.size() == 0) {
-    std::cout << "Skipping event. No activity inside the TPC!" << std::endl;
-    return;
-  }
-  int best_apa = FindBestAPA(apas);
-  if (best_apa != -1) fAPA = best_apa;
-  else {
-    std::cout << "Skipping event. Could not find good APA!" << std::endl;
-    return;
-  }
-
-  // check for problems
-  for (int it_plane = 0; it_plane < 3; ++it_plane) {
-    if (FindROI(best_apa,it_plane) == -1) {
-      std::cout << "Skipping event. Could not find good ROI in APA!" << std::endl;
-      return;
-    }
-  }
-
-  // produce image
+  // get handle on larcv image
   auto images = (larcv::EventImage2D*)(fMgr.get_data(larcv::kProductImage2D, "tpc"));
-  std::cout << std::endl;
+
+  // create images from the wire map
   for (int it_plane = 0; it_plane < 3; ++it_plane) {
-    int downsample = FindROI(best_apa,it_plane);
-    std::cout << "PLANE " << it_plane << " IMAGE" << std::endl;
-    std::cout << "Original image resolution " << fNumberWires << "x" << fNumberTicks;
-    larcv::Image2D image(fNumberWires,fNumberTicks);
-    for (int it_channel = 0; it_channel < fNumberWires; ++it_channel) {
-      int channel = it_channel + fFirstWire;
-      for (int it_tick = 0; it_tick < fNumberTicks; ++it_tick) {
-        int tick = it_tick + fFirstTick;
-        if (fWireMap.find(channel) != fWireMap.end()) image.set_pixel(it_channel,it_tick,fWireMap[channel][tick]);
+    larcv::Image2D image(fNumberChannels[it_plane],fMaxTick);
+    for (int it_channel = 0; it_channel < fNumberChannels[it_plane]; ++it_channel) {
+      int channel = it_channel + fFirstChannel[it_plane];
+      for (int it_tick = 0; it_tick < fMaxTick; ++it_tick) {
+        if (fWireMap.find(channel) != fWireMap.end()) image.set_pixel(it_channel,it_tick,fWireMap[channel][it_tick]);
+        else image.set_pixel(it_channel,it_tick,0);
       }
     }
-    image.compress(fNumberWires/downsample,fNumberTicks/(4*downsample));
-    std::cout << " => downsampling to " << fNumberWires/downsample << "x" << fNumberTicks/(4*downsample) << "." << std::endl << std::endl;
-    image.resize(600,600,0);
+    if (it_plane < 2) {
+      image.compress(600,640);
+    }
+    else {
+      image.compress(576,640);
+      image.resize(600,640,0);
+    }
     images->Emplace(std::move(image));
   }
 

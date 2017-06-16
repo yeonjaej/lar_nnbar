@@ -4,7 +4,7 @@ LArCVMaker:
 {
  module_type:             "nnbar/LArCVMaker/LArCVMaker"
  WireModuleLabel:         "caldata"
- MaxTick:                 4492
+ MaxTick:                 6400
  ADCCut:                  20
 }
 

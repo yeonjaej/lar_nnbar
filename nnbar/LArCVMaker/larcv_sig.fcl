@@ -1,5 +1,5 @@
-#include "services_dune.fcl"
-#include "LArCVMaker_dune.fcl"
+#include "services_microboone.fcl"
+#include "LArCVMaker_microboone.fcl"
 
 process_name: larcvmaker
 
@@ -8,7 +8,7 @@ services:
   TimeTracker:            {}
   MemoryTracker:          {}
   RandomNumberGenerator:  {}
-  @table::dunefd_services
+  @table::microboone_services
 }
 
 source:
@@ -24,3 +24,6 @@ physics:
 }
 
 physics.analyzers.larcv:  @local::LArCVMaker
+physics.analyzers.larcv.EventType: 1
+physics.analyzers.larcv.ADCCut: 20
+
