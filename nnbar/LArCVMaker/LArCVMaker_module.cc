@@ -54,8 +54,8 @@ private:
   int fEventType;
 
   const int fNumberChannels[3] = { 2400, 2400, 3456 };
-  const int fFirstChannel[3] = { 0, 2400, 5856 };
-  const int fLastChannel[3] = { 2399, 5855, 8255 };
+  const int fFirstChannel[3] = { 0, 2400, 4800 };
+  const int fLastChannel[3] = { 2399, 4799, 8255 };
 
   int fEvent;
   int fAPA;
@@ -117,22 +117,28 @@ void LArCVMaker::analyze(art::Event const & evt) {
   // get handle on larcv image
   auto images = (larcv::EventImage2D*)(fMgr.get_data(larcv::kProductImage2D, "tpc"));
 
+  int image_width[3] = { 2400, 2400, 3600 };
   // create images from the wire map
   for (int it_plane = 0; it_plane < 3; ++it_plane) {
-    larcv::Image2D image(fNumberChannels[it_plane],fMaxTick);
-    for (int it_channel = 0; it_channel < fNumberChannels[it_plane]; ++it_channel) {
+
+//    larcv::Image2D image(fNumberChannels[it_plane],fMaxTick);
+    larcv::Image2D image_temp(image_width[it_plane],6400);
+    for (int it_channel = 0; it_channel < image_width[it_plane]; ++it_channel) {
       int channel = it_channel + fFirstChannel[it_plane];
       for (int it_tick = 0; it_tick < fMaxTick; ++it_tick) {
-        if (fWireMap.find(channel) != fWireMap.end()) image.set_pixel(it_channel,it_tick,fWireMap[channel][it_tick]);
-        else image.set_pixel(it_channel,it_tick,0);
+        if (fWireMap.find(channel) != fWireMap.end()) image_temp.set_pixel(it_channel,it_tick,fWireMap[channel][it_tick]);
+        else image_temp.set_pixel(it_channel,it_tick,0);
       }
     }
-    if (it_plane < 2) {
-      image.compress(600,640);
-    }
-    else {
-      image.compress(576,640);
-      image.resize(600,640,0);
+    if (it_plane < 2)
+      image_temp.compress(600,640);
+    else
+      image_temp.compress(600,640);
+    larcv::Image2D image(600,640);
+    for (int it_x = 0; it_x < 600; ++it_x) {
+      for (int it_y = 0; it_y < 640; ++it_y) {
+        image.set_pixel(it_x,it_y,image_temp.pixel(it_x,it_y));
+      }
     }
     images->Emplace(std::move(image));
   }
