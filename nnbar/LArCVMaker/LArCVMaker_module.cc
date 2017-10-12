@@ -159,7 +159,7 @@ int LArCVMaker::FindROI(int apa, int plane) {
   for (int channel = first_channel; channel < last_channel; ++channel) {
     if (fWireMap.find(channel) != fWireMap.end()) {
       for (int tick = 0; tick < (int)fWireMap[channel].size(); ++tick) {
-        if (fWireMap[channel][tick] > fADCCut) {
+        if (fWireMap[channel][tick] > fADCCut || fWireMap[channel][tick] < -1. * fADCCut) {
           if (fFirstWire == -1 || fFirstWire > channel) fFirstWire = channel;
           if (fLastWire == -1 || fLastWire < channel) fLastWire = channel;
           if (fFirstTick == -1 || fFirstTick > tick) fFirstTick = tick;
@@ -270,15 +270,15 @@ void LArCVMaker::analyze(art::Event const & evt) {
       it != wireh->end(); ++it) {
     const raw::RawDigit & rawr = *it;
 
-   // std:: vector<float> adc;
-    //for (int i = 0; i < fMaxTick; i++) {
-    	//adc.push_back((float)raw.ADC(i));
-   // }
-   
     raw::RawDigit::ADCvector_t adc(rawr.Samples());
-    raw::Uncompress(rawr.ADCs(), adc, rawr.Compression());
+    raw::Uncompress(rawr.ADCs(), adc, rawr.GetPedestal(), rawr.Compression());
 
-    fWireMap.insert(std::pair<int,std::vector<float>>(rawr.Channel(),std::vector<float>(adc.begin(),adc.end())));
+    std::vector<float> adc_pedestal_sub;
+    for (unsigned int i = 0; i < rawr.Samples(); ++i) {
+      adc_pedestal_sub.push_back(adc.at(i) - rawr.GetPedestal());
+    }
+
+    fWireMap.insert(std::pair<int,std::vector<float>>(rawr.Channel(),adc_pedestal_sub));
     int apa = std::floor(rawr.Channel()/2560);
     if (std::find(apas.begin(),apas.end(),apa) == apas.end())
       apas.push_back(apa);
