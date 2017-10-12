@@ -6,7 +6,7 @@
 
 // data product includes
 #include "larcore/Geometry/Geometry.h"
-#include "lardataobj/RecoBase/Wire.h"
+#include "lardataobj/RawData/raw.h"
 #include "lardataobj/RawData/RawDigit.h"
 
 // root includes
@@ -278,7 +278,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
     raw::RawDigit::ADCvector_t adc(rawr.Samples());
     raw::Uncompress(rawr.ADCs(), adc, rawr.Compression());
 
-    fWireMap.insert(std::pair<int,std::vector<float>>(rawr.Channel(),adc));
+    fWireMap.insert(std::pair<int,std::vector<float>>(rawr.Channel(),std::vector<float>(adc.begin(),adc.end())));
     int apa = std::floor(rawr.Channel()/2560);
     if (std::find(apas.begin(),apas.end(),apa) == apas.end())
       apas.push_back(apa);
