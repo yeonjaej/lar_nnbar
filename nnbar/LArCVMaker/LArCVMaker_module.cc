@@ -7,6 +7,7 @@
 // data product includes
 #include "larcore/Geometry/Geometry.h"
 #include "lardataobj/RecoBase/Wire.h"
+#include "lardataobj/RawData/RawDigit.h"
 
 // root includes
 #include "TFile.h"
@@ -258,18 +259,27 @@ void LArCVMaker::analyze(art::Event const & evt) {
   fMgr.set_id(evt.id().run(),evt.id().subRun(),evt.id().event());
 
   // get wire objects
-  art::Handle<std::vector<recob::Wire>> wireh;
+  art::Handle<std::vector<raw::RawDigit>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
 
   // initialize ROI finding variables
   std::vector<int> apas;
 
   // fill wire map
-  for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
+  for (std::vector<raw::RawDigit>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
-    const recob::Wire & wire = *it;
-    fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),std::vector<float>(wire.Signal())));
-    int apa = std::floor(wire.Channel()/2560);
+    const raw::RawDigit & rawr = *it;
+
+   // std:: vector<float> adc;
+    //for (int i = 0; i < fMaxTick; i++) {
+    	//adc.push_back((float)raw.ADC(i));
+   // }
+   
+    raw::RawDigit::ADCvector_t adc(rawr.Samples());
+    raw::Uncompress(rawr.ADCs(), adc, rawr.Compression());
+
+    fWireMap.insert(std::pair<int,std::vector<float>>(rawr.Channel(),adc));
+    int apa = std::floor(rawr.Channel()/2560);
     if (std::find(apas.begin(),apas.end(),apa) == apas.end())
       apas.push_back(apa);
   }

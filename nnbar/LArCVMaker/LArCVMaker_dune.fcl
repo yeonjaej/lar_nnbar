@@ -3,7 +3,7 @@ BEGIN_PROLOG
 LArCVMaker:
 {
  module_type:             "nnbar/LArCVMaker/LArCVMaker"
- WireModuleLabel:         "caldata"
+ WireModuleLabel:         "daq"
  MaxTick:                 4492
  ADCCut:                  20
 }
