@@ -72,12 +72,8 @@ private:
   double fMomentumZ;
 
   // Background variables
-  bool fNC;
-  int fInteractionType;
-  double fNuEnergy;
-  double fQSqr;
-  int fNuPdg;
-  double fLepEnergy;
+  std::vector<int> fCosmicPrimaryPdg;
+  std::vector<double> fCosmicPrimaryE;
 
 }; // class DLTopology
 
@@ -101,29 +97,25 @@ void DLTopology::InitializeBranches() {
   fTree->Branch("Subrun",&fSubrun,"Subrun/I");
   fTree->Branch("Event",&fEvent,"Event/I");
 
-  fTree->Branch("VertexX",&fVertexX,"VertexX/D");
-  fTree->Branch("VertexY",&fVertexY,"VertexY/D");
-  fTree->Branch("VertexZ",&fVertexZ,"VertexZ/D");
+  if (fIsSignal) {
+    fTree->Branch("VertexX",&fVertexX,"VertexX/D");
+    fTree->Branch("VertexY",&fVertexY,"VertexY/D");
+    fTree->Branch("VertexZ",&fVertexZ,"VertexZ/D");
 
-  fTree->Branch("Contained",&fContained,"Contained/B");
+    fTree->Branch("Contained",&fContained,"Contained/B");
 
-  fTree->Branch("PionMultiplicity",&fPionMultiplicity,"PionMultiplicity/I");
-  fTree->Branch("LeptonMultiplicity",&fLeptonMultiplicity,"LeptonMultiplicity/I");
-  fTree->Branch("NucleonMultiplicity",&fNucleonMultiplicity,"NucleonMultiplicity/I");
-  fTree->Branch("InvariantMass",&fInvariantMass,"InvariantMass/D");
-  fTree->Branch("Momentum",&fMomentum,"Momentum/D");
-  fTree->Branch("MomentumX",&fMomentumX,"MomentumX/D");
-  fTree->Branch("MomentumY",&fMomentumY,"MomentumY/D");
-  fTree->Branch("MomentumZ",&fMomentumZ,"MomentumZ/D");
-
-  if (!fIsSignal) {
-    fTree->Branch("NC",&fNC,"NC/B");
-    fTree->Branch("InteractionType",&fInteractionType,"InteractionType/I");
-    fTree->Branch("NuEnergy",&fNuEnergy,"NuEnergy/D");
-    fTree->Branch("QSqr",&fQSqr,"QSqr/D");
-    fTree->Branch("NuPdg",&fNuPdg,"NuPdg/I");
-    fTree->Branch("LepEnergy",&fLepEnergy,"LepEnergy/D");
+    fTree->Branch("PionMultiplicity",&fPionMultiplicity,"PionMultiplicity/I");
+    fTree->Branch("LeptonMultiplicity",&fLeptonMultiplicity,"LeptonMultiplicity/I");
+    fTree->Branch("NucleonMultiplicity",&fNucleonMultiplicity,"NucleonMultiplicity/I");
+    fTree->Branch("InvariantMass",&fInvariantMass,"InvariantMass/D");
+    fTree->Branch("Momentum",&fMomentum,"Momentum/D");
+    fTree->Branch("MomentumX",&fMomentumX,"MomentumX/D");
+    fTree->Branch("MomentumY",&fMomentumY,"MomentumY/D");
+    fTree->Branch("MomentumZ",&fMomentumZ,"MomentumZ/D");
   }
+
+  fTree->Branch("CosmicPrimaryPdg","std::vector<int>",&fCosmicPrimaryPdg);
+  fTree->Branch("CosmicPrimaryE","std::vector<double>",&fCosmicPrimaryE);
 
 } // function DLTopology::InitializeBranches
 
@@ -134,29 +126,23 @@ void DLTopology::Clear() {
   fSubrun = 0;
   fEvent = 0;
 
-  fVertexX = 0;
-  fVertexY = 0;
-  fVertexZ = 0;
+  if (fIsSignal) {
+    fVertexX = 0;
+    fVertexY = 0;
+    fVertexZ = 0;
 
-  fContained = false;
-
-  fPionMultiplicity = 0;
-  fLeptonMultiplicity = 0;
-  fNucleonMultiplicity = 0;
-  fInvariantMass = 0;
-  fMomentum = 0;
-  fMomentumX = 0;
-  fMomentumY = 0;
-  fMomentumZ = 0;
-
-  if (!fIsSignal) {
-    fNC = 0;
-    fInteractionType = 0;
-    fNuEnergy = 0;
-    fQSqr = 0;
-    fNuPdg = 0;
-    fLepEnergy = 0;
+    fPionMultiplicity = 0;
+    fLeptonMultiplicity = 0;
+    fNucleonMultiplicity = 0;
+    fInvariantMass = 0;
+    fMomentum = 0;
+    fMomentumX = 0;
+    fMomentumY = 0;
+    fMomentumZ = 0;
   }
+
+  fCosmicPrimaryPdg.clear();
+  fCosmicPrimaryE.clear();
 
 } // function DLTopology::Clear
 
@@ -175,12 +161,32 @@ void DLTopology::analyze(art::Event const& evt) {
   fSubrun = (int) evt.id().subRun();
   fEvent = (int) evt.id().event();
 
+  art::Ptr<simb::MCTruth> mct_nnbar;
+  art::Ptr<simb::MCTruth> mct_cosmic;
+
   // MC truth information
-  art::Handle<std::vector<simb::MCTruth>> TruthListHandle;
-  std::vector<art::Ptr<simb::MCTruth>> TruthList;
-  if (evt.getByLabel("generator",TruthListHandle))
-    art::fill_ptr_vector(TruthList,TruthListHandle);
-  art::Ptr<simb::MCTruth> mct = TruthList[0];
+  if (fIsSignal) {
+    // nnbar mc truth
+    art::Handle<std::vector<simb::MCTruth>> nnbarTruthListHandle;
+    std::vector<art::Ptr<simb::MCTruth>> nnbarTruthList;
+    if (evt.getByLabel("generator",nnbarTruthListHandle))
+      art::fill_ptr_vector(nnbarTruthList,nnbarTruthListHandle);
+    mct_nnbar = nnbarTruthList[0];
+    // cosmic mc truth
+    art::Handle<std::vector<simb::MCTruth>> cosmicTruthListHandle;
+    std::vector<art::Ptr<simb::MCTruth>> cosmicTruthList;
+    if (evt.getByLabel("cosmic",cosmicTruthListHandle))
+      art::fill_ptr_vector(cosmicTruthList,cosmicTruthListHandle);
+    mct_cosmic = cosmicTruthList[0];
+  }
+  else {
+    // cosmic mc truth
+    art::Handle<std::vector<simb::MCTruth>> cosmicTruthListHandle;
+    std::vector<art::Ptr<simb::MCTruth>> cosmicTruthList;
+    if (evt.getByLabel("generator",cosmicTruthListHandle))
+      art::fill_ptr_vector(cosmicTruthList,cosmicTruthListHandle);
+    mct_cosmic = cosmicTruthList[0];
+  }
 
   // MC track information
   art::Handle<std::vector<sim::MCTrack>> TrackHandle;
@@ -200,8 +206,8 @@ void DLTopology::analyze(art::Event const& evt) {
     double py = 0;
     double pz = 0;
     double e = 0;
-    for (int it = 0; it < mct->NParticles(); ++it) {
-      simb::MCParticle part = mct->GetParticle(it);
+    for (int it = 0; it < mct_nnbar->NParticles(); ++it) {
+      simb::MCParticle part = mct_nnbar->GetParticle(it);
       if (part.StatusCode() == 1 && (abs(part.PdgCode()) == 211 || part.PdgCode() == 111)) {
         if (fVertexX == 0 && fVertexY == 0 && fVertexZ == 0) {
           fVertexX = part.Position(0).X();
@@ -228,97 +234,14 @@ void DLTopology::analyze(art::Event const& evt) {
     fMomentumZ = pz;
     fInvariantMass = sqrt(pow(e,2)-pow(fMomentum,2));
   }
-  // Background topology
-  else {
-    double px = 0;
-    double py = 0;
-    double pz = 0;
-    double e = 0;
-    for (int it = 0; it < mct->NParticles(); ++it) {
-      simb::MCParticle part = mct->GetParticle(it);
-      if (part.StatusCode() == 1) {
-        if (abs(part.PdgCode()) == 211 || part.PdgCode() == 111) {
-          ++fPionMultiplicity;
-          px += part.Px();
-          py += part.Py();
-          pz += part.Pz();
-          e += part.E();
-        }
-        else if (abs(part.PdgCode()) == 11 || abs(part.PdgCode()) == 13 || abs(part.PdgCode()) == 15) {
-          ++fLeptonMultiplicity;
-          px += part.Px();
-          py += part.Py();
-          pz += part.Pz();
-          e += part.E();
-        }
-        else if (part.PdgCode() == 2212 || part.PdgCode() == 2112) {
-          ++fNucleonMultiplicity;
-          px += part.Px();
-          py += part.Py();
-          pz += part.Pz();
-          e += part.E();
-        }
-        else std::cout << "Particle not accounted for, of type " << part.PdgCode() << std::endl;
-      }
+
+  for (int it = 0; it < mct_cosmic->NParticles(); ++it) {
+    simb::MCParticle part = mct_cosmic->GetParticle(it);
+    if (part.StatusCode() == 1) {
+      fCosmicPrimaryPdg.push_back(part.PdgCode());
+      fCosmicPrimaryE.push_back(part.E());
     }
-    fMomentum = sqrt(pow(px,2)+pow(py,2)+pow(pz,2));
-    fMomentumX = px;
-    fMomentumY = py;
-    fMomentumZ = pz;
-    fInvariantMass = sqrt(pow(e,2)-pow(fMomentum,2));
-    fVertexX = mct->GetNeutrino().Nu().Position(0).X();
-    fVertexY = mct->GetNeutrino().Nu().Position(0).Y();
-    fVertexZ = mct->GetNeutrino().Nu().Position(0).Z();
-    fNC = (bool) mct->GetNeutrino().CCNC();
-    fInteractionType = mct->GetNeutrino().InteractionType();
-    fNuEnergy = mct->GetNeutrino().Nu().E();
-    fQSqr = mct->GetNeutrino().QSqr();
-    fNuPdg = mct->GetNeutrino().Nu().PdgCode();
-    fLepEnergy = mct->GetNeutrino().Lepton().E();
   }
-
-  // See if event spans multiple apas
-  std::vector<int> apas;
-  for (std::vector<recob::Wire>::const_iterator it = WireHandle->begin(); it != WireHandle->end(); ++it) {
-    const recob::Wire & wire = *it;
-    int apa = std::floor((float)wire.Channel()/2560.);
-    if (std::find(apas.begin(),apas.end(),apa) == apas.end()) apas.push_back(apa);
-  }
-
-  // Check all tracks are contained in a single APA
-  bool all_particles_contained = true;
-  art::ServiceHandle<geo::Geometry> geo;
-  for (std::vector<sim::MCTrack>::const_iterator it = TrackHandle->begin(); it != TrackHandle->end(); ++it) {
-    const sim::MCTrack & track = *it;
-    bool particle_contained = false;
-    for (size_t it_tpc = 0; it_tpc < geo->NTPC(); ++it_tpc) {
-      const geo::TPCGeo & tpc = geo->TPC(it_tpc);
-      if (tpc.ContainsPosition(track.Start().Position().Vect()) && tpc.ContainsPosition(track.End().Position().Vect())) {
-        particle_contained = true;
-        break;
-      }
-    }
-    if (particle_contained == false) all_particles_contained = false;
-  }
-
-  // Check all showers are contained in a single APA
-  for (std::vector<sim::MCShower>::const_iterator it = ShowerHandle->begin(); it != ShowerHandle->end(); ++it) {
-    if (all_particles_contained == false) break;
-    const sim::MCShower & shower = *it;
-    bool particle_contained = false;
-    for (size_t it_tpc = 0; it_tpc < geo->NTPC(); ++it_tpc) {
-      const geo::TPCGeo & tpc = geo->TPC(it_tpc);
-      if (tpc.ContainsPosition(shower.Start().Position().Vect()) && tpc.ContainsPosition(shower.End().Position().Vect())) {
-        particle_contained = true;
-        break;
-      }
-    }
-    if (particle_contained == false) all_particles_contained = false;
-  }
-
-  // Put it all together to make a containment check
-  if (apas.size() == 1 && all_particles_contained) fContained = true;
-  else fContained = false;
 
   // Fill event tree
   fTree->Fill();
