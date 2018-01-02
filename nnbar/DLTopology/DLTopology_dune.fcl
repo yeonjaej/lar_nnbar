@@ -4,6 +4,8 @@ dune_DLTopology:
 { 
  module_type:             "nnbar/DLTopology/DLTopology"
  IsSignal:                false
+ MaxTick:                 4492
+ ADCCut:                  20
 }
 
 END_PROLOG

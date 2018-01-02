@@ -51,6 +51,7 @@ private:
   std::string fWireModuleLabel;
   int fMaxTick;
   int fADCCut;
+  int fContainmentCut;
   int fEventType;
 
   int fFirstWire;
@@ -301,17 +302,25 @@ void LArCVMaker::analyze(art::Event const & evt) {
     int downsample = FindROI(best_apa,it_plane);
     std::cout << "PLANE " << it_plane << " IMAGE" << std::endl;
     std::cout << "Original image resolution " << fNumberWires << "x" << fNumberTicks;
-    larcv::Image2D image(fNumberWires,fNumberTicks);
+    larcv::Image2D image_temp(fNumberWires,fNumberTicks);
     for (int it_channel = 0; it_channel < fNumberWires; ++it_channel) {
       int channel = it_channel + fFirstWire;
       for (int it_tick = 0; it_tick < fNumberTicks; ++it_tick) {
         int tick = it_tick + fFirstTick;
-        if (fWireMap.find(channel) != fWireMap.end()) image.set_pixel(it_channel,it_tick,fWireMap[channel][tick]);
+        if (fWireMap.find(channel) != fWireMap.end()) image_temp.set_pixel(it_channel,it_tick,fWireMap[channel][tick]);
       }
     }
-    image.compress(fNumberWires/downsample,fNumberTicks/(4*downsample));
+    image_temp.compress(fNumberWires/downsample,fNumberTicks/(4*downsample));
     std::cout << " => downsampling to " << fNumberWires/downsample << "x" << fNumberTicks/(4*downsample) << "." << std::endl << std::endl;
-    image.resize(600,600,0);
+    larcv::Image2D image(600,600);
+    int image_width = fNumberWires / downsample;
+    int image_height = fNumberTicks / (4 * downsample);
+    for (int it_x = 0; it_x < 600; ++it_x) {
+      for (int it_y = 0; it_y < 600; ++it_y) {
+        if (it_x < image_width && it_y < image_height) image.set_pixel(it_x,it_y,image_temp.pixel(it_x,it_y));
+        else image.set_pixel(it_x,it_y,0);
+      }
+    }
     images->Emplace(std::move(image));
   }
 
