@@ -419,6 +419,8 @@ void DLTopology::beginJob() {
 
 void DLTopology::analyze(art::Event const& evt) {
 
+  std::cout << "Beginning of analyze function..." << std::endl;
+
   Clear();
 
   fRun = (int) evt.id().run();
@@ -450,10 +452,14 @@ void DLTopology::analyze(art::Event const& evt) {
   art::Handle<std::vector<recob::Wire>> WireHandle;
   evt.getByLabel("caldata",WireHandle);
 
+  std::cout << "Done getting event info from handles." << std::endl;
+
   TVector3 vertex_position;
 
   // Signal topology
   if (fIsSignal) {
+
+    std::cout << "Getting signal event info." << std::endl;
 
     double px_nonuc = 0;
     double px_all   = 0;
@@ -524,6 +530,8 @@ void DLTopology::analyze(art::Event const& evt) {
   }
   // Background topology
   else {
+
+    std::cout << "Getting background event info." << std::endl;
 
     double px_nonuc = 0;
     double px_all   = 0;
@@ -598,6 +606,8 @@ void DLTopology::analyze(art::Event const& evt) {
     fLepEnergy = mct->GetNeutrino().Lepton().E();
     fCosZ = mct->GetNeutrino().Nu().Momentum().Vect().Unit().Z();
   }
+
+  std::cout << "Getting image information." << std::endl;
 
   // Find APA containing vertex
   art::ServiceHandle<geo::Geometry> geo;
@@ -704,7 +714,7 @@ void DLTopology::analyze(art::Event const& evt) {
   std::cout << std::endl;
 */
 
-
+  std::cout << "Filling event kinematics information." << std::endl;
 
   std::vector<int>  primary_trackid;
 
@@ -756,13 +766,19 @@ void DLTopology::analyze(art::Event const& evt) {
     return;
   }
 
+  std::cout << "Filling fDownSampling." << std::endl;
+
   // check for problems
   fDownsamplingU = FindROI(best_apa,0);
   fDownsamplingV = FindROI(best_apa,1);
   fDownsamplingZ = FindROI(best_apa,2);
 
+  std::cout << "Filling ana tree." << std::endl;
+
   // Fill event tree
   fTree->Fill();
+
+  std::cout << "Leaving function analyze." << std::endl;
 
 } // function DLTopology::analyze
 
