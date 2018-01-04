@@ -41,6 +41,7 @@ private:
   void CreateTree();
   void InitializeBranches();
   void Clear();
+  bool FindObject(int primary_trackid, art::Handle<std::vector<sim::MCTrack>> TrackHandle, art::Handle<std::vector<sim::MCShower>> ShowerHandle);
 
   // Input tree
   TTree* fTree;
@@ -155,6 +156,42 @@ void DLTopology::Clear() {
 
 } // function DLTopology::Clear
 
+bool DLTopology::FindObject(int primary_trackid, art::Handle<std::vector<sim::MCTrack>> TrackHandle, art::Handle<std::vector<sim::MCShower>> ShowerHandle) {
+
+  // Check if the primary has a track
+  for (std::vector<sim::MCTrack>::const_iterator it_track = TrackHandle->begin(); it_track != TrackHandle->end(); ++it_track) {
+    const sim::MCTrack & track = *it_track;
+    double trackid = track.TrackID();
+    if (trackid == primary_trackid) {
+      fMomentumX += track.Start().Px();
+      fMomentumY += track.Start().Py();
+      fMomentumZ += track.Start().Pz();
+      if (track.PdgCode() == 2212) fTotalEnergy += sqrt(pow(track.Start().E(),2)-pow(938,2));
+      else fTotalEnergy += track.Start().E();
+      std::cout << "Adding track with PDG " << track.PdgCode() << ", energy " << track.Start().E() << " MeV and momentum " << sqrt(pow(track.Start().Px(),2)+pow(track.Start().Py(),2)+pow(track.Start().Pz(),2)) << "MeV!" << std::endl;
+      return true;
+    }
+  }
+
+  // Check if the primary has a shower
+  for (std::vector<sim::MCShower>::const_iterator it_shower = ShowerHandle->begin(); it_shower != ShowerHandle->end(); ++it_shower) {
+    const sim::MCShower & shower = *it_shower;
+    double trackid = shower.TrackID();
+    if (trackid == primary_trackid) {
+      fMomentumX += shower.Start().Px();
+      fMomentumY += shower.Start().Py();
+      fMomentumZ += shower.Start().Pz();
+      fTotalEnergy += shower.Start().E();
+      std::cout << "Adding shower with PDG " << shower.PdgCode() << ", energy " << shower.Start().E() << " MeV and momentum " << sqrt(pow(shower.Start().Px(),2)+pow(shower.Start().Py(),2)+pow(shower.Start().Pz(),2)) << "MeV!" << std::endl;
+      return true;
+    }
+  }
+
+  // Return false if no match found
+  return false;
+
+} // function DLTopology::FindObject
+
 void DLTopology::beginJob() {
 
   CreateTree();
@@ -249,6 +286,10 @@ void DLTopology::analyze(art::Event const& evt) {
     if (part.StatusCode() == 1) {
       fCosmicPrimaryPdg.push_back(part.PdgCode());
       fCosmicPrimaryE.push_back(part.E());
+      if FindObject(part.TrackID(),TrackHandle,ShowerHandle) {
+        fCosmicPrimaryInFVPdg.push_back(part.PdgCode());
+        fCosmicPrimaryInFVE.push_back(part.E());
+      }
     }
   }
 
