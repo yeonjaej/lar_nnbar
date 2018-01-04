@@ -271,7 +271,7 @@ void DLTopology::analyze(art::Event const& evt) {
     if (part.StatusCode() == 1) {
       fCosmicPrimaryPdg.push_back(part.PdgCode());
       fCosmicPrimaryE.push_back(part.E());
-      if (FindObject(part.TrackID(),TrackHandle,ShowerHandle)) {
+      if (FindObject(part.TrackId(),TrackHandle,ShowerHandle)) {
         fCosmicPrimaryInFVPdg.push_back(part.PdgCode());
         fCosmicPrimaryInFVE.push_back(part.E());
       }
