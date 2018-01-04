@@ -75,6 +75,9 @@ private:
   std::vector<int> fCosmicPrimaryPdg;
   std::vector<double> fCosmicPrimaryE;
 
+  std::vector<int> fCosmicPrimaryInFVPdg;
+  std::vector<double> fCosmicPrimaryInFVE;
+
 }; // class DLTopology
 
 DLTopology::DLTopology(fhicl::ParameterSet const& pset) :
@@ -117,6 +120,9 @@ void DLTopology::InitializeBranches() {
   fTree->Branch("CosmicPrimaryPdg","std::vector<int>",&fCosmicPrimaryPdg);
   fTree->Branch("CosmicPrimaryE","std::vector<double>",&fCosmicPrimaryE);
 
+  fTree->Branch("fCosmicPrimaryInFVPdg","std::vector<int>",&fCosmicPrimaryInFVPdg);
+  fTree->Branch("fCosmicPrimaryInFVE","std::vector<double>",&fCosmicPrimaryInFVE);
+
 } // function DLTopology::InitializeBranches
 
 void DLTopology::Clear() {
@@ -143,6 +149,9 @@ void DLTopology::Clear() {
 
   fCosmicPrimaryPdg.clear();
   fCosmicPrimaryE.clear();
+
+  fCosmicPrimaryInFVPdg.clear();
+  fCosmicPrimaryInFVE.clear();
 
 } // function DLTopology::Clear
 
