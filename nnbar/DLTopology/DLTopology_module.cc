@@ -161,13 +161,15 @@ bool DLTopology::FindObject(int primary_trackid, art::Handle<std::vector<sim::MC
   // Check if the primary has a track
   for (std::vector<sim::MCTrack>::const_iterator it_track = TrackHandle->begin(); it_track != TrackHandle->end(); ++it_track) {
     const sim::MCTrack & track = *it_track;
-    if (track.TrackID() == primary_trackid) return true;
+    int trackid = track.TrackID();
+    if (trackid == primary_trackid) return true;
   }
 
   // Check if the primary has a shower
   for (std::vector<sim::MCShower>::const_iterator it_shower = ShowerHandle->begin(); it_shower != ShowerHandle->end(); ++it_shower) {
     const sim::MCShower & shower = *it_shower;
-    if (shower.TrackID() == primary_trackid) return true;
+    int showerid = shower.TrackID();
+    if (showerid == primary_trackid) return true;
   }
 
   // Return false if no match found
