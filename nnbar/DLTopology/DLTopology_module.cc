@@ -50,7 +50,7 @@ private:
   void ResetROI();
   void SetROISize();
   int FindBestAPA(std::vector<int> apas);
-  int FindROI(int apa, int plane);
+  void FindROI(int apa, int plane);
 
   // Input tree
   TTree* fTree;
@@ -139,6 +139,21 @@ private:
   const int fFirstChannel[3] = { 0, 800, 1600 };
   const int fLastChannel[3] = { 799, 1599, 2559 };
 
+  int fFirstWireU;
+  int fLastWireU;
+  int fFirstTickU;
+  int fLastTickU;
+
+  int fFirstWireV;
+  int fLastWireV;
+  int fFirstTickV;
+  int fLastTickV;
+
+  int fFirstWireZ;
+  int fLastWireZ;
+  int fFirstTickZ;
+  int fLastTickZ;
+
   int fAPA;
   int fNumberWires;
   int fNumberTicks;
@@ -224,6 +239,21 @@ void DLTopology::InitializeBranches() {
   fTree->Branch("DownsamplingV",&fDownsamplingV,"DownsamplingV/I");
   fTree->Branch("DownsamplingZ",&fDownsamplingZ,"DownsamplingZ/I");
 
+  fTree->Branch("FirstWireU",&fFirstWireU,"FirstWireU/I");
+  fTree->Branch("LastWireU",&fLastWireU,"LastWireU/I");
+  fTree->Branch("FirstTickU",&fFirstTickU,"FirstTickU/I");
+  fTree->Branch("LastTickU",&fLastTickU,"LastTickU/I");
+
+  fTree->Branch("FirstWireV",&fFirstWireV,"FirstWireV/I");
+  fTree->Branch("LastWireV",&fLastWireV,"LastWireV/I");
+  fTree->Branch("FirstTickV",&fFirstTickV,"FirstTickV/I");
+  fTree->Branch("LastTickV",&fLastTickV,"LastTickV/I");
+
+  fTree->Branch("FirstWireZ",&fFirstWireZ,"FirstWireZ/I");
+  fTree->Branch("LastWireZ",&fLastWireZ,"LastWireZ/I");
+  fTree->Branch("FirstTickZ",&fFirstTickZ,"FirstTickZ/I");
+  fTree->Branch("LastTickZ",&fLastTickZ,"LastTickZ/I");
+
 } // function DLTopology::InitializeBranches
 
 void DLTopology::Clear() {
@@ -295,6 +325,21 @@ void DLTopology::Clear() {
   fDownsamplingU = false;
   fDownsamplingV = false;
   fDownsamplingZ = false;
+
+  fFirstWireU = -1;
+  fLastWireU = -1;
+  fFirstTickU = -1;
+  fLastTickU = -1;
+
+  fFirstWireV = -1;
+  fLastWireV = -1;
+  fFirstTickV = -1;
+  fLastTickV = -1;
+
+  fFirstWireZ = -1;
+  fLastWireZ = -1;
+  fFirstTickZ = -1;
+  fLastTickZ = -1;
 
 } // function DLTopology::Clear
 
@@ -379,7 +424,7 @@ int DLTopology::FindBestAPA(std::vector<int> apas) {
   return best_apa;
 } // function DLTopology::FindBestAPA
 
-int DLTopology::FindROI(int apa, int plane) {
+void DLTopology::FindROI(int apa, int plane) {
 
   ResetROI();
 
@@ -404,9 +449,101 @@ int DLTopology::FindROI(int apa, int plane) {
   if (fFirstWire == -1 || fLastWire == -1 || fFirstTick == -1 || fLastTick == -1) return -1;
   SetROISize();
 
+  int Downsampling;
+
   // figure out whether we need to downsample
-  if (fNumberWires > 600 || fNumberTicks/4 > 600) return 1;
-  else return 0;
+  if (fNumberWires > 600 || fNumberTicks/4 > 600) Downsampling = 1;
+  else Downsampling = 0;
+
+  // add margin in wire dimension
+  int margin = 10 * downsample;
+  if (fFirstWire-margin < first_channel) fFirstWire = first_channel;
+  else fFirstWire -= margin;
+  if (fLastWire+margin > last_channel) fLastWire = last_channel;
+  else fLastWire += margin;
+  SetROISize();
+
+  // make sure number of wires is even
+  if (fNumberWires%downsample == 1 && fLastWire < last_channel) {
+    ++fLastWire;
+    ++fNumberWires;
+  }
+  else if (fNumberWires%downsample == 1 && fFirstWire > first_channel) {
+    --fFirstWire;
+    ++fNumberWires;
+  }
+  else if (fNumberWires%downsample == 1) {
+    std::cout << "VERY WEIRD. Odd number of wires but somehow out of bounds???" << std::endl;
+    std::cout << "There are " << fNumberWires << " wires. Exiting." << std::endl;
+    exit(1);
+  }
+  SetROISize();
+
+  // make sure number of ticks is good
+  int first_tick = 2;
+  int last_tick = 4489;
+  if (downsample == 1) {
+    first_tick = 0;
+    last_tick = 4491;
+  }
+  int num_ticks = last_tick - first_tick;
+  int ticks_to_add = 0;
+  int order = 4 * downsample;
+  margin = 40 * downsample;
+  if (fNumberTicks%order != 0) ticks_to_add = order-(fNumberTicks%order);
+  if (fNumberTicks+(2*margin)+ticks_to_add > num_ticks) {
+    fFirstTick = first_tick;
+    fLastTick = last_tick;
+  }
+  else {
+    // deal with start of ROI
+    if (fFirstTick-(margin+ticks_to_add) < first_tick) fFirstTick = first_tick;
+    else fFirstTick -= margin + ticks_to_add;
+    SetROISize();
+
+    // now deal with end of ROI
+    if (fNumberTicks%order != 0) ticks_to_add = order - (fNumberTicks%order);
+    else ticks_to_add = 0;
+    if (fLastTick+margin+ticks_to_add > last_tick) fLastTick = last_tick;
+    else fLastTick += margin + ticks_to_add;
+    SetROISize();
+
+    // now mop up any residual
+    if (fNumberTicks%order != 0) {
+      ticks_to_add = order-(fNumberTicks%order);
+      if (fFirstTick - ticks_to_add < first_tick) fFirstTick = first_tick;
+      else fFirstTick -= ticks_to_add;
+      SetROISize();
+    }
+
+    if (fNumberTicks%order != 0) {
+      std::cout << "Number of ticks " << fNumberTicks << " is still not divisible by order " << order << ". I have no idea what's happening." << std::endl;
+      exit(1);
+    }
+  }
+
+  if (plane == 0) {
+    fDownsamplingU = Downsampling;
+    fFirstWireU = fFirstWire;
+    fLastWireU = fLastWire;
+    fFirstTickU = fFirstTick;
+    fLastTickU = fLastTick;
+  }
+  else if (plane == 1) {
+    fDownsamplingV = Downsampling;
+    fFirstWireV = fFirstWire;
+    fLastWireV = fLastWire;
+    fFirstTickV = fFirstTick;
+    fLastTickV = fLastTick;
+  }
+  else if (plane == 2) {
+    fDownsamplingZ = Downsampling;
+    fFirstWireZ = fFirstWire;
+    fLastWireZ = fLastWire;
+    fFirstTickZ = fFirstTick;
+    fLastTickZ = fLastTick;
+  }
+  else std::cerr << "Plane is " << plane << ", which is definitely not allowed..." << std::endl;
 
 } // function DLTopology::FindROI
 
