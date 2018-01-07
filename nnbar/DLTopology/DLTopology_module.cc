@@ -446,14 +446,20 @@ void DLTopology::FindROI(int apa, int plane) {
     }
   }
 
-  if (fFirstWire == -1 || fLastWire == -1 || fFirstTick == -1 || fLastTick == -1) return -1;
-  SetROISize();
-
   int Downsampling;
 
-  // figure out whether we need to downsample
+  if (fFirstWire == -1 || fLastWire == -1 || fFirstTick == -1 || fLastTick == -1) {
+    if (plane == 0) fDownsamplingU = -1;
+    else if (plane == 1) fDownsamplingV = -1;
+    else if (plane == 2) fDownsamplingZ = -1;
+    else std::cerr << "Plane is " << plane << ", which should NOT be allowed..." << std::endl;
+    return;
+  }
+
   if (fNumberWires > 600 || fNumberTicks/4 > 600) Downsampling = 1;
   else Downsampling = 0;
+
+  int downsample = Downsampling + 1;
 
   // add margin in wire dimension
   int margin = 10 * downsample;
@@ -892,9 +898,9 @@ void DLTopology::analyze(art::Event const& evt) {
   }
 
   // check for problems
-  fDownsamplingU = FindROI(best_apa,0);
-  fDownsamplingV = FindROI(best_apa,1);
-  fDownsamplingZ = FindROI(best_apa,2);
+  FindROI(best_apa,0);
+  FindROI(best_apa,1);
+  FindROI(best_apa,2);
 
   // Fill event tree
   fTree->Fill();
