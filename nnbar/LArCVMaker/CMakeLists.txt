@@ -3,10 +3,9 @@ set( BOOST_LIB -L$ENV{BOOST_LIB} -lboost_system )
 set( LARCV_LIB -L$ENV{LARCV_LIBDIR} -llarcv )
 file(COPY $ENV{LARCV_LIBDIR}/liblarcv.so DESTINATION ${LIBRARY_OUTPUT_PATH})
 
-art_make( MODULE_LIBRARIES larcore_Geometry
+art_make( MODULE_LIBRARIES larcorealg_Geometry
 	  larcore_Geometry_Geometry_service
 	  larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
-	  larsim_MCCheater_BackTracker_service
 	  lardata_Utilities
 	  larevt_Filters
 	  lardataobj_RawData
@@ -24,9 +23,9 @@ art_make( MODULE_LIBRARIES larcore_Geometry
 	  ${ART_FRAMEWORK_SERVICES_REGISTRY}
 	  ${ART_FRAMEWORK_SERVICES_OPTIONAL}
 	  ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
-	  art_Persistency_Common canvas_Persistency_Common
-	  art_Persistency_Provenance canvas_Persistency_Provenance
-	  art_Utilities canvas_Utilities
+	  art_Persistency_Common
+	  art_Persistency_Provenance
+	  art_Utilities
 	  ${MF_MESSAGELOGGER}
 	  ${MF_UTILITIES}
 	  ${FHICLCPP}
