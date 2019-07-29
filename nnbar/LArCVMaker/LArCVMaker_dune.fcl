@@ -1,0 +1,11 @@
+BEGIN_PROLOG
+
+LArCVMaker:
+{
+ module_type:             "nnbar/LArCVMaker/LArCVMaker"
+ WireModuleLabel:         "daq"
+ MaxTick:                 4492
+ ADCCut:                  20
+}
+
+END_PROLOG
