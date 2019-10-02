@@ -3,8 +3,8 @@ BEGIN_PROLOG
 LArCVMaker:
 {
  module_type:             "nnbar/LArCVMaker/LArCVMaker"
- WireModuleLabel:         "daq"
- MaxTick:                 4492
+ WireModuleLabel:         "butcher"
+ MaxTick:                 6400
  ADCCut:                  20
 }
 

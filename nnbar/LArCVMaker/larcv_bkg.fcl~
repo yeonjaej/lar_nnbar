@@ -1,14 +1,15 @@
-#include "services_dune.fcl"
-#include "LArCVMaker_dune.fcl"
+#include "services_microboone.fcl"
+#include "LArCVMaker_microboone.fcl"
 
 process_name: larcvmaker
 
 services:
 {
+  TFileService: { fileName: "larcv_cosmic.root" }
   TimeTracker:            {}
   MemoryTracker:          {}
   RandomNumberGenerator:  {}
-  @table::dunefd_services
+  @table::microboone_services_reco
 }
 
 source:

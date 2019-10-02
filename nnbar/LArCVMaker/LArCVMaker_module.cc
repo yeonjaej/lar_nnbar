@@ -1,16 +1,13 @@
 // framework includes
 #include "art/Framework/Core/ModuleMacros.h"
 #include "art/Framework/Core/EDAnalyzer.h"
-#include "art/Framework/Services/Optional/TFileService.h"
+//#include "art/Framework/Services/Optional/TFileService.h"
 #include "fhiclcpp/ParameterSet.h"
 
 // data product includes
 #include "larcore/Geometry/Geometry.h"
 #include "lardataobj/RecoBase/Wire.h"
-#include "lardataobj/RawData/RawDigit.h"
-#include "lardataobj/RawData/raw.h"
 
-#include "nusimdata/SimulationBase/MCTruth.h"
 //#include "lardataobj/Simulation/SupernovaTruth.h"
 
 // root includes
@@ -68,9 +65,9 @@ private:
   int fFirstTick;
   int fLastTick;
 
-  const int fNumberChannels[3] = { 800, 800, 960 };
-  const int fFirstChannel[3] = { 0, 800, 1600 };
-  const int fLastChannel[3] = { 799, 1599, 2559 };
+  const int fNumberChannels[3] = { 2400, 2400, 3456 };
+  const int fFirstChannel[3] = { 0, 2400, 4800 };
+  const int fLastChannel[3] = { 2399, 4799, 8255 };
 
   int fEvent;
   int fAPA;
@@ -78,6 +75,7 @@ private:
   int fNumberTicks;
 
   std::map<int,std::vector<float>> fWireMap;
+  std::vector<std::vector<float>> fImage;
   //std::ofstream pdg;
   TH1D* hADCSpectrum;
   TFile* SpectrumFile;
@@ -116,7 +114,7 @@ void LArCVMaker::endJob() {
 void LArCVMaker::ClearData() {
 
   ResetROI();
-  fAPA = -1;
+  //  fAPA = -1;
   fWireMap.clear();
 } // function LArCVMaker::ClearData
 
@@ -135,45 +133,6 @@ void LArCVMaker::SetROISize() {
   fNumberWires = fLastWire - fFirstWire + 1;
   fNumberTicks = fLastTick - fFirstTick + 1;
 }
-
-int LArCVMaker::FindAPAWithNeutrino(std::vector<int> apas, art::Event const & evt) {
-
-  int fVertexAPA =-1;  
-  int best_apa = -1;
-
-  art::Handle<std::vector<simb::MCTruth>> TruthListHandle;
-  std::vector<art::Ptr<simb::MCTruth>> TruthList;
-  if (evt.getByLabel("cosmic",TruthListHandle))
-  
-  art::fill_ptr_vector(TruthList,TruthListHandle);
-  art::Ptr<simb::MCTruth> mct = TruthList.at(0);
-
-  for ( auto i = 0; i < mct->NParticles(); i++ ) {
-    std::cout <<"mother: "<< mct->GetParticle(i).Mother() << std::endl;
-    std::cout << "pdg: " <<mct->GetParticle(i).PdgCode() <<std::endl;
-  }
-  TVector3  vertex_position = mct->GetParticle(0).Position(0).Vect();
-  std::cout<<"mother code picked: "<<mct->GetParticle(0).Mother();
-  std::cout<<"position: "<<vertex_position.x() <<"," <<vertex_position.y() <<"," <<vertex_position.z() <<std::endl;
-
-
-  art::ServiceHandle<geo::Geometry> geo;
-  for (size_t it_tpc = 0; it_tpc < geo->NTPC(); ++it_tpc) {
-    const geo::TPCGeo & tpc = geo->TPC(it_tpc);
-
-    if (tpc.ContainsPosition(vertex_position)) {
-      fVertexAPA = std::floor((float)it_tpc/2);
-      break;
-    }
-  }
-
-
-  best_apa = fVertexAPA;
-  std::cout<< best_apa <<std::endl;
-
-  return best_apa;
-
-} // function LArCVMaker::FindBestAPA
 
 int LArCVMaker::FindROI(int best_apa, int plane) {
   
@@ -216,99 +175,40 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
   fMgr.set_id(evt.id().run(),evt.id().subRun(),evt.id().event());
 
-  //int fVertexAPA =-1;
-
   // get wire objects
-  art::Handle<std::vector<raw::RawDigit>> wireh;
+  art::Handle<std::vector<recob::Wire>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
 
-  // initialize ROI finding variables
-  std::vector<int> apas;
-
   // fill wire map
-  for (std::vector<raw::RawDigit>::const_iterator it = wireh->begin();
+  for (std::vector<recob::Wire>::const_iterator it = wireh->begin();
       it != wireh->end(); ++it) {
-    const raw::RawDigit & rawr = *it;
+    const recob::Wire & wire = *it;
+    fWireMap.insert(std::pair<int,std::vector<float>>(wire.Channel(),std::vector<float>(wire.Signal())));
 
-      
-    raw::RawDigit::ADCvector_t adc(rawr.Samples());
-    raw::Uncompress(rawr.ADCs(), adc, rawr.Compression());
-
-    fWireMap.insert(std::pair<int,std::vector<float>>(rawr.Channel(),std::vector<float>(adc.begin(),adc.end())));
-    int apa = std::floor(rawr.Channel()/2560);
-    if (std::find(apas.begin(),apas.end(),apa) == apas.end())
-      apas.push_back(apa);
   }
-
-  // find best APA
-  if (apas.size() == 0) {
-    std::cout << "Skipping event. No activity inside the TPC!" << std::endl;
-    return;
-  }
-  int best_apa = FindAPAWithNeutrino(apas,evt);
-  if (best_apa != -1) fAPA = best_apa;
-  else {
-    std::cout << "Skipping event. Could not find good APA!" << std::endl;
-    return;
-  }
-  std::cout << fAPA<<std::endl;
-
-  // check for problems
-  for (int it_plane = 0; it_plane < 3; ++it_plane) {
-    if (FindROI(best_apa,it_plane) == -1) {
-      std::cout << "Skipping event. Could not find good ROI in APA!" << std::endl;
-      return;
-    }
-  }
-
-  // produce image
+  // get handle on larcv image
   auto images = (larcv::EventImage2D*)(fMgr.get_data(larcv::kProductImage2D, "tpc"));
-  std::cout << std::endl;
+
+  int image_width[3] = { 2400, 2400, 3600 };
+  
   for (int it_plane = 0; it_plane < 3; ++it_plane) {
-    int downsample = FindROI(best_apa,it_plane);
-    std::cout << "downsampleing? " << downsample << std::endl;
-    std::cout << "PLANE " << it_plane << " IMAGE" << std::endl;
-    std::cout << "Original image resolution " << fNumberWires << "x" << fNumberTicks;
-    larcv::Image2D image(fNumberWires,fNumberTicks);
-    for (int it_channel = 0; it_channel < fNumberWires; ++it_channel) {
-      int channel = it_channel + fFirstWire;
-      for (int it_tick = 0; it_tick < fNumberTicks; ++it_tick) {
-        int tick = it_tick + fFirstTick;
-        if (fWireMap.find(channel) != fWireMap.end()) {
-	  image.set_pixel(it_channel,it_tick,fWireMap[channel][tick]);
-	  if (it_plane ==2) hADCSpectrum->Fill(fWireMap[channel][tick]);
-	}
+    larcv::Image2D image_temp(image_width[it_plane],6400);
+    for (int it_channel = 0; it_channel < image_width[it_plane]; ++it_channel) {
+      int channel = it_channel + fFirstChannel[it_plane];
+      for (int it_tick = 0; it_tick < fMaxTick; ++it_tick) {
+        if (fWireMap.find(channel) != fWireMap.end()) image_temp.set_pixel(it_channel,it_tick,fWireMap[channel][it_tick]);
+        else image_temp.set_pixel(it_channel,it_tick,0);
       }
     }
-    //yj commented this out june 20th 2019
-    // image.compress(fNumberWires/downsample,fNumberTicks/(4*downsample));
-    //std::cout << " => downsampling to " << fNumberWires/downsample << "x" << fNumberTicks/(4*downsample) << "." << std::endl << std::endl;
-    //image.resize(600,600,0);
-    //std::cout << "resized to 600 x 600" << std::endl;
-    images->Emplace(std::move(image));
-    std::cout << "emplace done" << std::endl;
+    images->Emplace(std::move(image_temp));
   }
   
-  auto roi_v = (larcv::EventROI*)(fMgr.get_data(larcv::kProductROI, "tpc"));
+  auto roi = (larcv::EventROI*)(fMgr.get_data(larcv::kProductROI, "tpc"));
 
-  larcv::ROI roi((larcv::ROIType_t)fEventType);
+  roi->Emplace(larcv::ROI((larcv::ROIType_t)fEventType));
 
- 
-  //  art::Handle<std::vector<simb::MCTruth>> TruthListHandle;
-  //  std::vector<art::Ptr<simb::MCTruth>> TruthList;
-
-  //  if (evt.getByLabel("nnbar",TruthListHandle))
-  //    art::fill_ptr_vector(TruthList,TruthListHandle);
-
-  //  art::Ptr<simb::MCTruth> mct = TruthList.at(0);
-  //  std::cout<< "mct nparticles " << mct->NParticles() << std::endl;
-
-
-  std::cout << "autoroi done" << std::endl;
-  roi_v->Emplace(std::move(roi));
-  std::cout << "second emplace done" << std::endl;
   fMgr.save_entry();
-  std::cout << "save entry done" << std::endl;
+
 } // function LArCVMaker::analyze
 
 DEFINE_ART_MODULE(LArCVMaker)

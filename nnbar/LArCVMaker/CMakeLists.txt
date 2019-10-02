@@ -12,10 +12,9 @@ art_make( MODULE_LIBRARIES larcorealg_Geometry
 	  lardataobj_RecoBase
 	  lardata_RecoObjects larreco_Deprecated  
 	  larreco_RecoAlg
+	  SignalShapingServiceMicroBooNE_service
 	  larpandora_LArPandoraInterface
-	  SignalShapingServiceDUNE10kt_service
-	  SignalShapingServiceDUNE35t_service
-	  nusimdata_SimulationBase
+          nusimdata_SimulationBase
 	  ${LARRECO_LIB}
 	  ${LARDATA_LIB}
 	  ${ART_FRAMEWORK_CORE}
