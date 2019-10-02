@@ -1,0 +1,205 @@
+event number: 17641 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17642 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17643 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17644 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17645 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17646 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17647 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17648 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17649 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17650 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17651 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17652 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17653 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17654 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17655 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17656 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17657 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17658 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17659 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17660 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17661 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17662 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17663 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17664 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17641 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17642 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17643 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17644 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17645 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17646 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17647 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17648 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17649 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17650 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17641 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17642 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17643 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17644 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17641 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17642 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17643 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17644 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17645 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17646 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17647 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17648 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17641 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17642 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17643 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17649 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17644 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17641 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17642 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+event number: 17643 ar39: 0 ar42: 0 kr85: 0 rn222: 0 po210: 0 cpa: 0 apa: 0 neutron: 0
+7901 ar39: 489 ar42: 0 kr85: 63 rn222: 12 po210: 0 cpa: 2 apa: 0 neutron: 0
+7902 ar39: 477 ar42: 2 kr85: 47 rn222: 29 po210: 0 cpa: 3 apa: 0 neutron: 0
+7903 ar39: 446 ar42: 0 kr85: 60 rn222: 13 po210: 0 cpa: 1 apa: 0 neutron: 0
+7904 ar39: 476 ar42: 0 kr85: 55 rn222: 15 po210: 0 cpa: 0 apa: 0 neutron: 0
+7905 ar39: 486 ar42: 0 kr85: 61 rn222: 16 po210: 0 cpa: 1 apa: 0 neutron: 0
+7906 ar39: 482 ar42: 0 kr85: 52 rn222: 27 po210: 0 cpa: 2 apa: 0 neutron: 0
+7907 ar39: 454 ar42: 1 kr85: 55 rn222: 16 po210: 0 cpa: 1 apa: 0 neutron: 0
+7908 ar39: 468 ar42: 0 kr85: 59 rn222: 16 po210: 0 cpa: 0 apa: 0 neutron: 0
+7909 ar39: 504 ar42: 0 kr85: 52 rn222: 20 po210: 0 cpa: 1 apa: 0 neutron: 0
+7910 ar39: 460 ar42: 0 kr85: 59 rn222: 17 po210: 0 cpa: 0 apa: 0 neutron: 0
+7911 ar39: 462 ar42: 0 kr85: 59 rn222: 11 po210: 0 cpa: 2 apa: 0 neutron: 0
+7912 ar39: 482 ar42: 0 kr85: 51 rn222: 15 po210: 0 cpa: 1 apa: 0 neutron: 0
+7913 ar39: 459 ar42: 0 kr85: 58 rn222: 22 po210: 0 cpa: 1 apa: 0 neutron: 0
+7914 ar39: 472 ar42: 0 kr85: 56 rn222: 15 po210: 0 cpa: 2 apa: 0 neutron: 0
+7915 ar39: 485 ar42: 0 kr85: 55 rn222: 14 po210: 0 cpa: 2 apa: 0 neutron: 0
+7916 ar39: 458 ar42: 0 kr85: 43 rn222: 19 po210: 0 cpa: 1 apa: 0 neutron: 0
+7917 ar39: 460 ar42: 0 kr85: 54 rn222: 17 po210: 0 cpa: 2 apa: 0 neutron: 0
+7918 ar39: 443 ar42: 0 kr85: 55 rn222: 20 po210: 0 cpa: 5 apa: 0 neutron: 0
+7919 ar39: 449 ar42: 0 kr85: 60 rn222: 20 po210: 0 cpa: 3 apa: 0 neutron: 0
+7920 ar39: 475 ar42: 0 kr85: 51 rn222: 17 po210: 0 cpa: 1 apa: 0 neutron: 0
+7921 ar39: 475 ar42: 0 kr85: 57 rn222: 26 po210: 0 cpa: 0 apa: 0 neutron: 0
+7922 ar39: 430 ar42: 0 kr85: 61 rn222: 13 po210: 0 cpa: 3 apa: 0 neutron: 0
+7923 ar39: 424 ar42: 0 kr85: 52 rn222: 14 po210: 0 cpa: 1 apa: 0 neutron: 0
+7924 ar39: 480 ar42: 0 kr85: 44 rn222: 18 po210: 0 cpa: 3 apa: 0 neutron: 0
+7925 ar39: 463 ar42: 0 kr85: 53 rn222: 26 po210: 0 cpa: 2 apa: 0 neutron: 0
+7926 ar39: 436 ar42: 0 kr85: 51 rn222: 21 po210: 0 cpa: 1 apa: 0 neutron: 0
+7927 ar39: 421 ar42: 0 kr85: 44 rn222: 26 po210: 0 cpa: 2 apa: 0 neutron: 0
+7928 ar39: 430 ar42: 0 kr85: 62 rn222: 16 po210: 0 cpa: 1 apa: 0 neutron: 0
+7929 ar39: 475 ar42: 0 kr85: 49 rn222: 18 po210: 0 cpa: 3 apa: 0 neutron: 0
+7930 ar39: 465 ar42: 0 kr85: 45 rn222: 13 po210: 0 cpa: 0 apa: 0 neutron: 0
+7931 ar39: 432 ar42: 0 kr85: 52 rn222: 23 po210: 0 cpa: 0 apa: 0 neutron: 0
+7932 ar39: 429 ar42: 0 kr85: 37 rn222: 20 po210: 0 cpa: 0 apa: 0 neutron: 0
+7933 ar39: 435 ar42: 0 kr85: 54 rn222: 17 po210: 0 cpa: 1 apa: 0 neutron: 0
+7934 ar39: 460 ar42: 0 kr85: 54 rn222: 14 po210: 0 cpa: 0 apa: 0 neutron: 0
+7935 ar39: 409 ar42: 0 kr85: 47 rn222: 20 po210: 0 cpa: 3 apa: 0 neutron: 0
+7936 ar39: 469 ar42: 0 kr85: 49 rn222: 14 po210: 0 cpa: 1 apa: 0 neutron: 0
+7937 ar39: 448 ar42: 0 kr85: 63 rn222: 24 po210: 0 cpa: 1 apa: 0 neutron: 0
+7938 ar39: 486 ar42: 0 kr85: 58 rn222: 14 po210: 0 cpa: 0 apa: 0 neutron: 0
+7939 ar39: 448 ar42: 0 kr85: 51 rn222: 18 po210: 0 cpa: 1 apa: 0 neutron: 0
+7940 ar39: 453 ar42: 0 kr85: 50 rn222: 22 po210: 0 cpa: 0 apa: 0 neutron: 0
+7941 ar39: 451 ar42: 0 kr85: 52 rn222: 17 po210: 0 cpa: 0 apa: 0 neutron: 0
+7942 ar39: 458 ar42: 0 kr85: 47 rn222: 19 po210: 0 cpa: 0 apa: 0 neutron: 0
+7943 ar39: 487 ar42: 0 kr85: 52 rn222: 24 po210: 0 cpa: 4 apa: 0 neutron: 0
+7944 ar39: 463 ar42: 0 kr85: 48 rn222: 18 po210: 0 cpa: 1 apa: 0 neutron: 0
+7945 ar39: 497 ar42: 0 kr85: 59 rn222: 15 po210: 0 cpa: 2 apa: 0 neutron: 0
+7946 ar39: 453 ar42: 0 kr85: 49 rn222: 23 po210: 0 cpa: 3 apa: 0 neutron: 0
+7947 ar39: 477 ar42: 0 kr85: 51 rn222: 17 po210: 0 cpa: 1 apa: 0 neutron: 0
+7948 ar39: 512 ar42: 0 kr85: 56 rn222: 14 po210: 0 cpa: 2 apa: 0 neutron: 0
+7949 ar39: 465 ar42: 0 kr85: 48 rn222: 22 po210: 0 cpa: 1 apa: 0 neutron: 0
+7950 ar39: 438 ar42: 0 kr85: 54 rn222: 19 po210: 0 cpa: 0 apa: 0 neutron: 0
+7951 ar39: 449 ar42: 0 kr85: 51 rn222: 26 po210: 0 cpa: 1 apa: 0 neutron: 0
+7901 ar39: 489 ar42: 0 kr85: 63 rn222: 12 po210: 0 cpa: 2 apa: 0 neutron: 0
+7902 ar39: 451 ar42: 0 kr85: 56 rn222: 13 po210: 0 cpa: 1 apa: 0 neutron: 0
+7903 ar39: 420 ar42: 0 kr85: 52 rn222: 15 po210: 0 cpa: 1 apa: 0 neutron: 0
+7904 ar39: 486 ar42: 0 kr85: 51 rn222: 19 po210: 0 cpa: 2 apa: 0 neutron: 0
+7905 ar39: 484 ar42: 0 kr85: 49 rn222: 22 po210: 0 cpa: 0 apa: 0 neutron: 0
+7906 ar39: 439 ar42: 0 kr85: 54 rn222: 19 po210: 0 cpa: 0 apa: 0 neutron: 0
+7907 ar39: 448 ar42: 1 kr85: 53 rn222: 33 po210: 0 cpa: 0 apa: 0 neutron: 0
+7908 ar39: 469 ar42: 0 kr85: 56 rn222: 22 po210: 0 cpa: 2 apa: 0 neutron: 0
+7909 ar39: 461 ar42: 0 kr85: 41 rn222: 9 po210: 0 cpa: 1 apa: 0 neutron: 0
+7910 ar39: 460 ar42: 0 kr85: 59 rn222: 17 po210: 0 cpa: 0 apa: 0 neutron: 0
+7911 ar39: 468 ar42: 0 kr85: 45 rn222: 14 po210: 0 cpa: 1 apa: 0 neutron: 0
+7912 ar39: 478 ar42: 0 kr85: 55 rn222: 16 po210: 0 cpa: 2 apa: 0 neutron: 0
+7913 ar39: 452 ar42: 0 kr85: 52 rn222: 23 po210: 0 cpa: 0 apa: 0 neutron: 0
+7914 ar39: 433 ar42: 0 kr85: 52 rn222: 24 po210: 0 cpa: 0 apa: 0 neutron: 0
+7915 ar39: 465 ar42: 0 kr85: 61 rn222: 19 po210: 0 cpa: 1 apa: 0 neutron: 0
+7916 ar39: 458 ar42: 0 kr85: 43 rn222: 19 po210: 0 cpa: 1 apa: 0 neutron: 0
+7917 ar39: 438 ar42: 0 kr85: 59 rn222: 21 po210: 0 cpa: 0 apa: 0 neutron: 0
+7918 ar39: 454 ar42: 0 kr85: 57 rn222: 19 po210: 0 cpa: 2 apa: 0 neutron: 0
+7919 ar39: 435 ar42: 0 kr85: 51 rn222: 16 po210: 0 cpa: 1 apa: 0 neutron: 0
+7920 ar39: 475 ar42: 0 kr85: 51 rn222: 17 po210: 0 cpa: 1 apa: 0 neutron: 0
+7921 ar39: 468 ar42: 0 kr85: 49 rn222: 12 po210: 0 cpa: 1 apa: 0 neutron: 0
+7922 ar39: 443 ar42: 0 kr85: 53 rn222: 15 po210: 0 cpa: 1 apa: 0 neutron: 0
+7923 ar39: 439 ar42: 0 kr85: 52 rn222: 14 po210: 0 cpa: 1 apa: 0 neutron: 0
+7924 ar39: 454 ar42: 0 kr85: 54 rn222: 15 po210: 0 cpa: 1 apa: 0 neutron: 0
+7925 ar39: 455 ar42: 0 kr85: 48 rn222: 17 po210: 0 cpa: 0 apa: 0 neutron: 0
+7926 ar39: 470 ar42: 0 kr85: 58 rn222: 11 po210: 0 cpa: 2 apa: 0 neutron: 0
+7927 ar39: 467 ar42: 0 kr85: 69 rn222: 13 po210: 0 cpa: 1 apa: 0 neutron: 0
+7928 ar39: 444 ar42: 0 kr85: 56 rn222: 23 po210: 0 cpa: 2 apa: 0 neutron: 0
+7929 ar39: 464 ar42: 0 kr85: 50 rn222: 15 po210: 0 cpa: 2 apa: 0 neutron: 0
+7930 ar39: 464 ar42: 0 kr85: 52 rn222: 10 po210: 0 cpa: 1 apa: 0 neutron: 0
+7931 ar39: 462 ar42: 0 kr85: 52 rn222: 18 po210: 0 cpa: 1 apa: 0 neutron: 0
+7932 ar39: 420 ar42: 0 kr85: 52 rn222: 24 po210: 0 cpa: 0 apa: 0 neutron: 0
+7933 ar39: 499 ar42: 0 kr85: 45 rn222: 10 po210: 0 cpa: 1 apa: 0 neutron: 0
+7934 ar39: 488 ar42: 2 kr85: 53 rn222: 17 po210: 0 cpa: 0 apa: 0 neutron: 0
+7935 ar39: 502 ar42: 0 kr85: 72 rn222: 17 po210: 0 cpa: 1 apa: 0 neutron: 0
+7936 ar39: 469 ar42: 0 kr85: 49 rn222: 14 po210: 0 cpa: 1 apa: 0 neutron: 0
+7937 ar39: 488 ar42: 0 kr85: 59 rn222: 11 po210: 0 cpa: 4 apa: 0 neutron: 0
+7938 ar39: 452 ar42: 0 kr85: 48 rn222: 28 po210: 0 cpa: 2 apa: 0 neutron: 0
+7939 ar39: 448 ar42: 0 kr85: 51 rn222: 18 po210: 0 cpa: 1 apa: 0 neutron: 0
+7940 ar39: 460 ar42: 0 kr85: 50 rn222: 20 po210: 0 cpa: 1 apa: 0 neutron: 0
+7941 ar39: 436 ar42: 0 kr85: 55 rn222: 22 po210: 0 cpa: 1 apa: 0 neutron: 0
+7942 ar39: 476 ar42: 0 kr85: 43 rn222: 13 po210: 0 cpa: 2 apa: 0 neutron: 0
+7943 ar39: 462 ar42: 0 kr85: 57 rn222: 15 po210: 0 cpa: 2 apa: 0 neutron: 0
+7944 ar39: 459 ar42: 0 kr85: 66 rn222: 14 po210: 0 cpa: 4 apa: 0 neutron: 0
+7945 ar39: 500 ar42: 0 kr85: 49 rn222: 19 po210: 0 cpa: 1 apa: 0 neutron: 0
+7946 ar39: 438 ar42: 0 kr85: 56 rn222: 20 po210: 0 cpa: 0 apa: 0 neutron: 0
+7947 ar39: 479 ar42: 0 kr85: 61 rn222: 15 po210: 0 cpa: 2 apa: 0 neutron: 0
+7948 ar39: 463 ar42: 0 kr85: 37 rn222: 23 po210: 0 cpa: 0 apa: 0 neutron: 0
+7949 ar39: 454 ar42: 0 kr85: 66 rn222: 22 po210: 0 cpa: 2 apa: 0 neutron: 0
+7950 ar39: 444 ar42: 0 kr85: 44 rn222: 21 po210: 0 cpa: 0 apa: 0 neutron: 0
+7951 ar39: 483 ar42: 0 kr85: 53 rn222: 20 po210: 0 cpa: 2 apa: 0 neutron: 0
+7952 ar39: 463 ar42: 0 kr85: 61 rn222: 20 po210: 0 cpa: 1 apa: 0 neutron: 0
+7953 ar39: 453 ar42: 0 kr85: 50 rn222: 15 po210: 0 cpa: 0 apa: 0 neutron: 0
+7954 ar39: 502 ar42: 0 kr85: 46 rn222: 19 po210: 0 cpa: 1 apa: 0 neutron: 0
+7955 ar39: 446 ar42: 0 kr85: 54 rn222: 26 po210: 0 cpa: 2 apa: 0 neutron: 0
+7956 ar39: 446 ar42: 0 kr85: 50 rn222: 16 po210: 0 cpa: 3 apa: 0 neutron: 0
+7957 ar39: 453 ar42: 0 kr85: 43 rn222: 29 po210: 0 cpa: 0 apa: 0 neutron: 0
+7958 ar39: 452 ar42: 0 kr85: 54 rn222: 16 po210: 0 cpa: 1 apa: 0 neutron: 0
+7959 ar39: 451 ar42: 0 kr85: 40 rn222: 11 po210: 0 cpa: 1 apa: 0 neutron: 0
+7960 ar39: 434 ar42: 1 kr85: 54 rn222: 15 po210: 0 cpa: 1 apa: 0 neutron: 0
+7961 ar39: 468 ar42: 0 kr85: 58 rn222: 22 po210: 0 cpa: 1 apa: 0 neutron: 0
+7962 ar39: 494 ar42: 0 kr85: 53 rn222: 17 po210: 0 cpa: 1 apa: 0 neutron: 0
+7963 ar39: 472 ar42: 0 kr85: 30 rn222: 19 po210: 0 cpa: 0 apa: 0 neutron: 0
+7964 ar39: 459 ar42: 0 kr85: 68 rn222: 20 po210: 0 cpa: 2 apa: 0 neutron: 0
+7965 ar39: 430 ar42: 1 kr85: 56 rn222: 19 po210: 0 cpa: 3 apa: 0 neutron: 0
+7966 ar39: 452 ar42: 0 kr85: 43 rn222: 14 po210: 0 cpa: 2 apa: 0 neutron: 0
+7967 ar39: 451 ar42: 1 kr85: 48 rn222: 18 po210: 0 cpa: 0 apa: 0 neutron: 0
+7968 ar39: 460 ar42: 0 kr85: 43 rn222: 14 po210: 0 cpa: 3 apa: 0 neutron: 0
+7969 ar39: 464 ar42: 0 kr85: 63 rn222: 14 po210: 0 cpa: 2 apa: 0 neutron: 0
+7970 ar39: 499 ar42: 0 kr85: 53 rn222: 19 po210: 0 cpa: 2 apa: 0 neutron: 0
+7971 ar39: 436 ar42: 0 kr85: 49 rn222: 20 po210: 0 cpa: 1 apa: 0 neutron: 0
+7972 ar39: 459 ar42: 0 kr85: 52 rn222: 20 po210: 0 cpa: 1 apa: 0 neutron: 0
+7973 ar39: 434 ar42: 0 kr85: 57 rn222: 20 po210: 0 cpa: 0 apa: 0 neutron: 0
+7974 ar39: 451 ar42: 0 kr85: 57 rn222: 14 po210: 0 cpa: 0 apa: 0 neutron: 0
+7975 ar39: 444 ar42: 0 kr85: 51 rn222: 12 po210: 0 cpa: 2 apa: 0 neutron: 0
+7976 ar39: 452 ar42: 0 kr85: 58 rn222: 21 po210: 0 cpa: 0 apa: 0 neutron: 0
+7977 ar39: 444 ar42: 0 kr85: 49 rn222: 14 po210: 0 cpa: 2 apa: 0 neutron: 0
+7978 ar39: 485 ar42: 0 kr85: 49 rn222: 24 po210: 0 cpa: 1 apa: 0 neutron: 0
+7979 ar39: 471 ar42: 0 kr85: 46 rn222: 13 po210: 0 cpa: 1 apa: 0 neutron: 0
+7980 ar39: 464 ar42: 0 kr85: 54 rn222: 9 po210: 0 cpa: 1 apa: 0 neutron: 0
+7981 ar39: 451 ar42: 0 kr85: 62 rn222: 15 po210: 0 cpa: 0 apa: 0 neutron: 0
+7982 ar39: 436 ar42: 0 kr85: 63 rn222: 13 po210: 0 cpa: 1 apa: 0 neutron: 0
+7983 ar39: 478 ar42: 0 kr85: 46 rn222: 15 po210: 0 cpa: 2 apa: 0 neutron: 0
+7984 ar39: 472 ar42: 0 kr85: 52 rn222: 27 po210: 0 cpa: 1 apa: 0 neutron: 0
+7985 ar39: 428 ar42: 0 kr85: 59 rn222: 18 po210: 0 cpa: 2 apa: 0 neutron: 0
+7986 ar39: 421 ar42: 0 kr85: 57 rn222: 22 po210: 0 cpa: 1 apa: 0 neutron: 0
+7987 ar39: 461 ar42: 0 kr85: 49 rn222: 19 po210: 0 cpa: 1 apa: 0 neutron: 0
+7988 ar39: 474 ar42: 0 kr85: 50 rn222: 14 po210: 0 cpa: 0 apa: 0 neutron: 0
+7989 ar39: 520 ar42: 0 kr85: 44 rn222: 20 po210: 0 cpa: 1 apa: 0 neutron: 0
+7990 ar39: 478 ar42: 0 kr85: 69 rn222: 16 po210: 0 cpa: 2 apa: 0 neutron: 0
+7991 ar39: 484 ar42: 0 kr85: 51 rn222: 20 po210: 0 cpa: 3 apa: 0 neutron: 0
+7992 ar39: 493 ar42: 0 kr85: 57 rn222: 11 po210: 0 cpa: 1 apa: 0 neutron: 0
+7993 ar39: 442 ar42: 0 kr85: 58 rn222: 13 po210: 0 cpa: 0 apa: 0 neutron: 0
+7994 ar39: 485 ar42: 0 kr85: 51 rn222: 20 po210: 0 cpa: 0 apa: 0 neutron: 0
+7995 ar39: 456 ar42: 0 kr85: 75 rn222: 28 po210: 0 cpa: 0 apa: 0 neutron: 0
+7996 ar39: 456 ar42: 0 kr85: 59 rn222: 18 po210: 0 cpa: 5 apa: 0 neutron: 0
+7997 ar39: 453 ar42: 0 kr85: 46 rn222: 20 po210: 0 cpa: 2 apa: 0 neutron: 0
+7998 ar39: 473 ar42: 0 kr85: 58 rn222: 8 po210: 0 cpa: 1 apa: 0 neutron: 0
+7999 ar39: 481 ar42: 0 kr85: 57 rn222: 16 po210: 0 cpa: 1 apa: 0 neutron: 0
+8000 ar39: 475 ar42: 0 kr85: 48 rn222: 10 po210: 0 cpa: 2 apa: 0 neutron: 0
