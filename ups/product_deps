@@ -2,8 +2,8 @@
 
 # The *parent* line must the first non-commented line and defines this product and version
 # The version must be of the form vxx_yy_zz (e.g. v01_02_03)
-parent nnbar v06_15_00
-defaultqual e10
+parent lar_nnbar v08_00_00_12
+defaultqual e17
 
 # These optional lines define where headers, libraries, and executables go and should
 # be used only if your product does not conform to the defaults.
@@ -29,9 +29,9 @@ table_fragment_end
 # Add the dependent product and version
 
 product          version
-uboonecode      v06_15_00
+uboonecode      v08_00_00_12
 
-cetbuildtools	v5_06_00	-	only_for_build
+cetbuildtools	v7_11_00	-	only_for_build
 end_product_list
 
 
@@ -39,9 +39,9 @@ end_product_list
 # Make a table by adding columns before "notes". 
 # e10  - with gcc 4.9.3 and -std=c++1y
 qualifier	uboonecode
-e10:debug	e10:debug
-e10:opt		e10:opt
-e10:prof	e10:prof
+e17:debug	e17:debug
+e17:opt		e17:opt
+e17:prof	e17:prof
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
