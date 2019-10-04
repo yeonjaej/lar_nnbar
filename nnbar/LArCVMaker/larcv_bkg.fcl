@@ -9,7 +9,7 @@ services:
   TimeTracker:            {}
   MemoryTracker:          {}
   RandomNumberGenerator:  {}
-  @table::microboone_services_reco
+  @table::microboone_services
 }
 
 source:

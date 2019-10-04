@@ -1,2 +1,3 @@
 *.pyc
+nnbar/LArCVMaker/*.root
 *.root

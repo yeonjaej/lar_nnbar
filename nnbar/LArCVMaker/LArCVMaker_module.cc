@@ -8,7 +8,8 @@
 #include "larcore/Geometry/Geometry.h"
 #include "lardataobj/RecoBase/Wire.h"
 
-//#include "lardataobj/Simulation/SupernovaTruth.h"
+#include "nusimdata/SimulationBase/MCTruth.h"//for signal
+
 
 // root includes
 #include "TFile.h"
@@ -175,6 +176,21 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
   fMgr.set_id(evt.id().run(),evt.id().subRun(),evt.id().event());
 
+  //nnbar signal only
+  /* art::Handle<std::vector<simb::MCTruth>> TruthListHandle;
+  std::vector<art::Ptr<simb::MCTruth>> TruthList;
+  if (evt.getByLabel("nnbar",TruthListHandle))
+
+  art::fill_ptr_vector(TruthList,TruthListHandle);
+  art::Ptr<simb::MCTruth> mct = TruthList.at(0);
+
+  TVector3  vertex_position = mct->GetParticle(0).Position(0).Vect();
+  art::ServiceHandle<geo::Geometry> geo;
+  std::cout << "n tpc in uboone? " << geo->NTPC() << std::endl;
+  const geo::TPCGeo & tpc = geo->TPC(0);
+  std::cout <<"ver_x : "<<vertex_position.X()<<" , ver_y : "<<vertex_position.Y()<<" , ver_z : "<<vertex_position.Z()<< std::endl;
+  std::cout << "vertex contained in tpc ? " << tpc.ContainsPosition(vertex_position) << std::endl;
+  */
   // get wire objects
   art::Handle<std::vector<recob::Wire>> wireh;
   evt.getByLabel(fWireModuleLabel,wireh);
@@ -196,7 +212,10 @@ void LArCVMaker::analyze(art::Event const & evt) {
     for (int it_channel = 0; it_channel < image_width[it_plane]; ++it_channel) {
       int channel = it_channel + fFirstChannel[it_plane];
       for (int it_tick = 0; it_tick < fMaxTick; ++it_tick) {
-        if (fWireMap.find(channel) != fWireMap.end()) image_temp.set_pixel(it_channel,it_tick,fWireMap[channel][it_tick]);
+        if (fWireMap.find(channel) != fWireMap.end()) {
+	  image_temp.set_pixel(it_channel,it_tick,fWireMap[channel][it_tick]);
+	  if (it_plane==2 && fWireMap[channel][it_tick]!=0) hADCSpectrum->Fill(fWireMap[channel][it_tick]);
+	}
         else image_temp.set_pixel(it_channel,it_tick,0);
       }
     }
