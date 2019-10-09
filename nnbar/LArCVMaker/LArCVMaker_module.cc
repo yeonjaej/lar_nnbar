@@ -219,7 +219,14 @@ void LArCVMaker::analyze(art::Event const & evt) {
         else image_temp.set_pixel(it_channel,it_tick,0);
       }
     }
-    images->Emplace(std::move(image_temp));
+    larcv::ImageMeta meta_temp(400,400,400,400,0.,0.);
+    std::cout << "meta dump: "<< image_temp.meta().dump()<<std::endl;
+    image_temp.compress(400,400);
+    std::cout << "af compression  meta dump: "<< image_temp.meta().dump()<<std::endl;
+    //image_temp.reset(meta_temp);
+    larcv::Image2D image(meta_temp,image_temp.as_vector());    
+std::cout << "af new image :: meta dump: "<< image.meta().dump()<<std::endl;
+    images->Emplace(std::move(image));
   }
   
   auto roi = (larcv::EventROI*)(fMgr.get_data(larcv::kProductROI, "tpc"));
