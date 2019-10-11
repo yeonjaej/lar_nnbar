@@ -27,6 +27,9 @@
 
 // local includes
 #include "larcv/core/DataFormat/EventImage2D.h"
+//#include "larcv/core/DataFormat/Image2D.h"
+#include "larcv/core/DataFormat/EventParticle.h"
+#include "larcv/core/DataFormat/Particle.h"
 //#include "DataFormat/EventROI.h"
 #include "larcv/core/DataFormat/IOManager.h"
 
@@ -113,58 +116,13 @@ void LArCVMaker::endJob() {
 
 void LArCVMaker::ClearData() {
 
-  ResetROI();
+  //  ResetROI();
   //  fAPA = -1;
   fWireMap.clear();
 } // function LArCVMaker::ClearData
 
-void LArCVMaker::ResetROI() {
 
-  fFirstWire = -1;
-  fLastWire = -1;
-  fFirstTick = -1;
-  fLastTick = -1;
-  fNumberWires = -1;
-  fNumberTicks = -1;
-} // function LArCVMaker::ResetROI
 
-void LArCVMaker::SetROISize() {
-
-  fNumberWires = fLastWire - fFirstWire + 1;
-  fNumberTicks = fLastTick - fFirstTick + 1;
-}
-
-int LArCVMaker::FindROI(int best_apa, int plane) {
-  
-  ResetROI();
-
-  std::cout << "setting ROI as full APA" <<std::endl;
-
-  fFirstTick=0;
-  fLastTick=4487;
-
-  if (plane==0) {
-    fFirstWire = (2560*best_apa);
-    fLastWire = (2560*best_apa)+799;
-  }
-
-  if (plane==1) {
-    fFirstWire = (2560*best_apa)+800;
-    fLastWire = (2560*best_apa)+1599;
-  }
-
-  if (plane==2) {
-    fFirstWire = (2560*best_apa)+1600;
-    fLastWire = (2560*best_apa)+2559;
-  }
-  std::cout <<"ROI set!"<<std::endl; 
- 
-  
-  SetROISize();
-
-  int downsample = 1;
-  return downsample;
-} // function LArCVMaker::FindROI
 
 void LArCVMaker::analyze(art::Event const & evt) {
 
@@ -187,28 +145,100 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
   }
   // get handle on larcv image
-  auto images = (larcv::EventImage2D*)(fMgr.get_data("EventImage2D", "tpc"));
-
-  int image_width[3] = { 2400, 2400, 3600 };
+  //std::cout << "0.0" <<std::endl;
+  auto images = (larcv::EventImage2D*)(fMgr.get_data("image2d", "tpc"));
+  //std::cout << "0.1" << std::endl;
+  size_t image_width[3] = { 2400, 2400, 3600 };
+  //size_t ticks = 6400;
+  //std::cout << "0.2" << std::endl;
+  //auto const& image = new larcv::Image2D
+  //  std::vector<larcv::Image2D> image_v;
+  //  std::cout << "0.21" << std::endl;
+  //larcv::Image2D image_0(400, 400);
+  //std::cout << "0.22" << std::endl;
+  //image_v.push_back(image_0);
+  //std::cout << "0.221" << std::endl;  
+  //larcv::Image2D image_1(2400, 400);
+  //image_v.push_back(image_1);
+  //std::cout << "0.222" << std::endl;
+  //larcv::Image2D image_2(3600, 6400);
+  //image_v.push_back(image_2);
+  //larcv::Image2D temp_img_k(400,400);
+  //std::cout << temp_img_k.size() << std::endl;
   
-  for (int it_plane = 0; it_plane < 3; ++it_plane) {
-    larcv::Image2D image_temp(image_width[it_plane],6400);
-    for (int it_channel = 0; it_channel < image_width[it_plane]; ++it_channel) {
+  //std::cout << "0.23" << std::endl;
+  for (size_t it_plane = 0; it_plane < 3; ++it_plane) {
+
+    larcv::Image2D image_temp(400,400);
+    std::cout << "400 400"  << std::endl;
+    float px= image_temp.pixel(0,0);
+    std::cout << "px : "<< px << std::endl; 
+
+    for (size_t it_channel = 0; it_channel < image_width[it_plane]; ++it_channel) {
+      std::cout << "0.5" << std::endl;
       int channel = it_channel + fFirstChannel[it_plane];
+      std::cout << "0.6" << std::endl;
       for (int it_tick = 0; it_tick < fMaxTick; ++it_tick) {
+	std::cout << "0.7" << std::endl;
+	//wire_idx = it_channel/wire_f;
+	std::cout << "0.8" << std::endl;
+	//tick_idx = it_tick/tick_f;
+
+	std::cout << "0.9" << std::endl;
+	
+	
+	//if (fWireMap.find(channel) != fWireMap.end()) {
+	// std::cout << "1.0" << std::endl;
+	// pixel_update = temp_img.pixel(wire_idx, tick_idx)+fWireMap[channel][it_tick];
+	//  std::cout << "1.1" << std::endl;
+	//  temp_img.set_pixel(wire_idx,tick_idx, pixel_update);
+	//  std::cout << "1.2" << std::endl;
+	//	}
+	//std::cout << "1.3" << std::endl;
+        //else {
+	  
+	//}image_v.at(it_plane).set_pixel(it_channel,it_tick,0);
         if (fWireMap.find(channel) != fWireMap.end()) image_temp.set_pixel(it_channel,it_tick,fWireMap[channel][it_tick]);
         else image_temp.set_pixel(it_channel,it_tick,0);
+	//std::cout << "1.4" << std::endl;
       }
+      std::cout << "-1" <<std::endl;
     }
-    images->emplace(std::move(image_temp));
+    std::cout << "0" <<std::endl;
+    //images->emplace(std::move(image_temp));
+    images->emplace(std::move(image_temp)); 
   }
-  
+
+  std::cout << "1" <<std::endl; 
+  auto particles = (larcv::EventParticle*)(fMgr.get_data("particle", "tpc"));
+
+  std::cout << "2" <<std::endl;
+
+  larcv::Particle particle_temp; //:_pdg=fEventType;
+
+  std::cout << "3" <<std::endl;
+  particle_temp.id(fEventType);
+
+  std::cout << "4" <<std::endl;
+  particles->append(particle_temp);
+
+  std::cout << "5" <<std::endl;
+  std::vector<larcv::Particle> part_v_temp;
+
+  std::cout << "6" <<std::endl;
+  part_v_temp.push_back(particle_temp);
+  //std::vector<larcv::Particle>&& part_v = part_v_temp;
+  //  part_v.push_back(particle_temp);
+
+  //pset.emplace(part_v);
+
+
   //auto roi = (larcv::EventROI*)(fMgr.get_data(larcv::kProductROI, "tpc"));
 
   //roi->Emplace(larcv::ROI((larcv::ROIType_t)fEventType));
-
+  std::cout << "7" <<std::endl;
   fMgr.save_entry();
-
+  std::cout << "8" <<std::endl;
 } // function LArCVMaker::analyze
 
 DEFINE_ART_MODULE(LArCVMaker)

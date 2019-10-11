@@ -1,0 +1,10 @@
+/pnfs/uboone/scratch/users/yjwa/corsika/cosmic_only/v6/gen_g4_detsim_reco1/cosmic_only/23132895_0/cosmic_only_0_20190912T025315_reco3_064a3715-1c35-439b-9890-40ee95856f4a.root
+/pnfs/uboone/scratch/users/yjwa/corsika/cosmic_only/v6/gen_g4_detsim_reco1/cosmic_only/23132895_1/cosmic_only_1_20190912T020330_reco3_c01fca60-4bfd-4142-abb6-da37dca00272.root
+/pnfs/uboone/scratch/users/yjwa/corsika/cosmic_only/v6/gen_g4_detsim_reco1/cosmic_only/23132895_2/cosmic_only_2_20190911T215428_reco3_66d7c136-1bdc-4def-80c4-37c7da6b2c8b.root
+/pnfs/uboone/scratch/users/yjwa/corsika/cosmic_only/v6/gen_g4_detsim_reco1/cosmic_only/23132895_3/cosmic_only_3_20190915T171547_reco3_45946643-3962-459b-bd92-45320a39eb45.root
+/pnfs/uboone/scratch/users/yjwa/corsika/cosmic_only/v6/gen_g4_detsim_reco1/cosmic_only/23132895_4/cosmic_only_4_20190911T202834_reco3_a1924f80-41e1-456c-9ecc-2de5fdd42d9d.root
+/pnfs/uboone/scratch/users/yjwa/corsika/cosmic_only/v6/gen_g4_detsim_reco1/cosmic_only/23132895_5/cosmic_only_5_20190912T202522_reco3_42a33aff-fdaa-4bec-bb03-6ad0a3b744c5.root
+/pnfs/uboone/scratch/users/yjwa/corsika/cosmic_only/v6/gen_g4_detsim_reco1/cosmic_only/23132895_7/cosmic_only_7_20190913T050711_reco3_07909ace-0042-46d1-93b9-6b1561b916a4.root
+/pnfs/uboone/scratch/users/yjwa/corsika/cosmic_only/v6/gen_g4_detsim_reco1/cosmic_only/23132895_8/cosmic_only_8_20190913T052114_reco3_5f6b6572-4219-46f2-84fc-fe0296a4102d.root
+/pnfs/uboone/scratch/users/yjwa/corsika/cosmic_only/v6/gen_g4_detsim_reco1/cosmic_only/23132895_9/cosmic_only_9_20190912T054144_reco3_01d94a1a-8afd-4891-af6c-8d2ca226ead5.root
+/pnfs/uboone/scratch/users/yjwa/corsika/cosmic_only/v6/gen_g4_detsim_reco1/cosmic_only/23132895_10/cosmic_only_10_20190913T043915_reco3_ad1b50a3-9e2b-4686-8f28-f2138203f5af.root
