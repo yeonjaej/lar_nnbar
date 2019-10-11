@@ -26,9 +26,9 @@
 #include <map>
 
 // local includes
-#include "DataFormat/EventImage2D.h"
-#include "DataFormat/EventROI.h"
-#include "DataFormat/IOManager.h"
+#include "larcv/core/DataFormat/EventImage2D.h"
+//#include "DataFormat/EventROI.h"
+#include "larcv/core/DataFormat/IOManager.h"
 
 #include <iostream>
 #include <fstream>
@@ -187,7 +187,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
 
   }
   // get handle on larcv image
-  auto images = (larcv::EventImage2D*)(fMgr.get_data(larcv::kProductImage2D, "tpc"));
+  auto images = (larcv::EventImage2D*)(fMgr.get_data("EventImage2D", "tpc"));
 
   int image_width[3] = { 2400, 2400, 3600 };
   
@@ -200,12 +200,12 @@ void LArCVMaker::analyze(art::Event const & evt) {
         else image_temp.set_pixel(it_channel,it_tick,0);
       }
     }
-    images->Emplace(std::move(image_temp));
+    images->emplace(std::move(image_temp));
   }
   
-  auto roi = (larcv::EventROI*)(fMgr.get_data(larcv::kProductROI, "tpc"));
+  //auto roi = (larcv::EventROI*)(fMgr.get_data(larcv::kProductROI, "tpc"));
 
-  roi->Emplace(larcv::ROI((larcv::ROIType_t)fEventType));
+  //roi->Emplace(larcv::ROI((larcv::ROIType_t)fEventType));
 
   fMgr.save_entry();
 
