@@ -11,7 +11,7 @@
 #include "lardataobj/RawData/raw.h"
 
 #include "nusimdata/SimulationBase/MCTruth.h"
-//#include "lardataobj/Simulation/SupernovaTruth.h"
+#include "lardataobj/Simulation/SupernovaTruth.h"
 
 // root includes
 #include "TFile.h"
@@ -147,7 +147,7 @@ int LArCVMaker::FindAPAWithNeutrino(std::vector<int> apas, art::Event const & ev
 
   art::Handle<std::vector<simb::MCTruth>> TruthListHandle;
   std::vector<art::Ptr<simb::MCTruth>> TruthList;
-  if (evt.getByLabel("atmo",TruthListHandle))
+  if (evt.getByLabel("marley",TruthListHandle))//
   
   art::fill_ptr_vector(TruthList,TruthListHandle);
   art::Ptr<simb::MCTruth> mct = TruthList.at(0);
@@ -191,7 +191,7 @@ int LArCVMaker::FindTPCWithNeutrino(std::vector<int> tpcs, art::Event const & ev
 
   art::Handle<std::vector<simb::MCTruth>> TruthListHandle;
   std::vector<art::Ptr<simb::MCTruth>> TruthList;
-  if (evt.getByLabel("atmo",TruthListHandle))
+  if (evt.getByLabel("marley",TruthListHandle))
   
   art::fill_ptr_vector(TruthList,TruthListHandle);
   art::Ptr<simb::MCTruth> mct = TruthList.at(0);
@@ -297,8 +297,10 @@ void LArCVMaker::analyze(art::Event const & evt) {
     return;
   }
   //int best_apa = FindAPAWithNeutrino(apas,evt);
+  
   int best_tpc = FindTPCWithNeutrino(apas,evt);
-
+  //int best_tpc = rand() % 24;//for rad.
+   
   std::cout << "best_tpc %2 " << best_tpc%2 << std::endl;
 
   int best_apa = std::floor((float)best_tpc/2);
@@ -326,7 +328,7 @@ void LArCVMaker::analyze(art::Event const & evt) {
     std::cout << "downsampleing? " << downsample << std::endl;
     std::cout << "PLANE " << it_plane << " IMAGE" << std::endl;
     std::cout << "Original image resolution " << fNumberWires << "x" << fNumberTicks;
-    larcv::Image2D image(fNumberWires,fNumberTicks);
+    larcv::Image2D image(fNumberWires/2,fNumberTicks);//fNumberWires -> 
     for (int it_channel = 0; it_channel < fNumberWires/2; ++it_channel) {
       int channel = it_channel + fFirstWire;
       if (best_tpc%2 == 1){
