@@ -79,6 +79,7 @@ private:
   std::vector<std::vector<float>> fImage;
   //std::ofstream pdg;
   TH1D* hADCSpectrum;
+  TH1D* hADCSpectrum_downsized;
   TFile* SpectrumFile;
   std::ofstream pdg;
 }; // class LArCVMaker
@@ -101,13 +102,15 @@ void LArCVMaker::beginJob() {
   fMgr.set_out_file(filename);
   fMgr.initialize();
   SpectrumFile = new TFile("./SignalADCSpectrum.root","RECREATE");
-  hADCSpectrum = new TH1D("hADCSpectrum","ADC Spectrum Collection; ADC; Entries",4096, 0, 4096);
+  hADCSpectrum = new TH1D("hADCSpectrum","ADC Spectrum Collection; ADC; Entries",1000, 0, 1000);
+  hADCSpectrum_downsized = new TH1D("hADCSpectrum_downsized","ADC Spectrum Collection Downsized; ADC; Entries",1000, 0, 10000);
 } // function LArCVMaker::beginJob
 
 void LArCVMaker::endJob() {
   
   SpectrumFile->cd();
   hADCSpectrum->Write();
+  hADCSpectrum_downsized->Write();
   SpectrumFile->Close();
   fMgr.finalize();
 } // function LArCVMaker::endJob
@@ -220,12 +223,15 @@ void LArCVMaker::analyze(art::Event const & evt) {
       }
     }
     larcv::ImageMeta meta_temp(400,400,400,400,0.,0.);
-    std::cout << "meta dump: "<< image_temp.meta().dump()<<std::endl;
     image_temp.compress(400,400);
-    std::cout << "af compression  meta dump: "<< image_temp.meta().dump()<<std::endl;
-    //image_temp.reset(meta_temp);
+
+    for (unsigned int iter = 0; iter<image_temp.as_vector().size(); iter++){
+      if (it_plane==2 && image_temp.as_vector().at(iter) !=0){
+	hADCSpectrum_downsized->Fill(image_temp.as_vector().at(iter));
+      }
+    }
+
     larcv::Image2D image(meta_temp,image_temp.as_vector());    
-std::cout << "af new image :: meta dump: "<< image.meta().dump()<<std::endl;
     images->Emplace(std::move(image));
   }
   
