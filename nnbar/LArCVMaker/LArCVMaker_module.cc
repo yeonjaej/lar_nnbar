@@ -170,9 +170,12 @@ void LArCVMaker::analyze(art::Event const & evt) {
   for (size_t it_plane = 0; it_plane < 3; ++it_plane) {
 
     larcv::Image2D image_temp(400,400);
-    std::cout << "400 400"  << std::endl;
+    std::cout << "Want 400x400 images with correct meta" << std::endl;
+    std::cout << "cols : "<< image_temp.meta().cols() << " , rows: "<< image_temp.meta().rows()  << std::endl;  
+    //float px= image_temp.pixel(0,0);    
+    std::cout << "is it 400 400"  << std::endl;
     float px= image_temp.pixel(0,0);
-    std::cout << "px : "<< px << std::endl; 
+    std::cout << "px valuve at (0,0) : "<< px << std::endl; 
 
     for (size_t it_channel = 0; it_channel < image_width[it_plane]; ++it_channel) {
       std::cout << "0.5" << std::endl;
