@@ -1,0 +1,35 @@
+#include "services_dune.fcl"
+
+LArCVMaker:
+{
+ module_type:             "nnbar/LArCVMaker/LArCVMaker"
+ WireModuleLabel:         "daq"
+ MaxTick:                 4492
+ ADCCut:                  20
+}
+
+process_name: larcvmaker
+
+services:
+{
+  TimeTracker:            {}
+  MemoryTracker:          {}
+  RandomNumberGenerator:  {}
+  @table::dunefd_services
+}
+
+source:
+{
+  module_type: RootInput
+  maxEvents:  -1
+}
+
+physics:
+{
+ ana:        [ larcv ]
+ end_paths:  [ ana ]
+}
+
+physics.analyzers.larcv:  @local::LArCVMaker
+physics.analyzers.larcv.EventType: 2
+physics.analyzers.larcv.ADCCut: 20
