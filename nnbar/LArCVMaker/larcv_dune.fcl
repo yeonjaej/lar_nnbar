@@ -3,7 +3,7 @@
 LArCVMaker:
 {
  module_type:             "nnbar/LArCVMaker/LArCVMaker"
- WireModuleLabel:         "daq"
+ WireModuleLabel:         "caldata"
  MaxTick:                 4492
  ADCCut:                  20
 }
@@ -33,3 +33,6 @@ physics:
 physics.analyzers.larcv:  @local::LArCVMaker
 physics.analyzers.larcv.EventType: 2
 physics.analyzers.larcv.ADCCut: 20
+
+
+services.Geometry: @local::dune10kt_1x2x6_geo
